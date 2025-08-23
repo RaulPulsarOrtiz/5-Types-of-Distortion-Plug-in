@@ -10,32 +10,73 @@
 
 #include "GUIposition.h"
 
-juce::Rectangle<int> GUIposition::getWorkingArea()
-{
-    auto bounds = getLocalBounds();
-    //  bounds.reduce(15, //JUCE_LIVE_CONSTANT(5),
-    //                20); //JUCE_LIVE_CONSTANT(5));
-    bounds.removeFromTop(20);
-    bounds.removeFromBottom(20);
-    bounds.removeFromLeft(20);
-    bounds.removeFromRight(20);
+//auto totalArea = getLocalBounds();
+//auto innerArea = totalArea.reduced(50);
+//auto halfLeftArea = innerArea.withWidth(innerArea.getWidth() / 2);
+//auto leftQuarterArea = innerArea.withWidth(innerArea.getWidth() / 4);
+//auto rightQuarterArea = innerArea.removeFromRight(innerArea.getWidth() / 4);
+//auto inputMeterArea = leftQuarterArea.withWidth(leftQuarterArea.getWidth() - 50);
+//auto outputMeterArea = rightQuarterArea.withWidth(rightQuarterArea.getWidth() - 50).withX(rightQuarterArea.getX() + 50);
+//auto leftComponentArea = halfLeftArea.removeFromRight(leftQuarterArea.getWidth());
+//auto rightComponentArea = innerArea.removeFromRight(rightQuarterArea.getWidth());
+//auto middlePointX = innerArea.getCentreX();
+//auto middlePointY = innerArea.getCentreY();
 
-    return bounds;
+
+juce::Rectangle<int> GUIposition::getInnerArea()
+{
+    auto totalArea = getLocalBounds();
+    auto innerArea = totalArea.reduced(50);
+
+    return innerArea;
 }
 
-juce::Rectangle<int> GUIposition::getAnalyserArea()
+juce::Rectangle<int> GUIposition::getInputMeterArea()
 {
-    auto analyserAreaHeight = 300;
-    auto analyserAreaWidth = 300;
-    auto analyserArea = getWorkingArea().removeFromTop(analyserAreaHeight);
-    analyserArea = getWorkingArea().removeFromTop(analyserAreaWidth);
-    return analyserArea;
+    auto totalArea = getLocalBounds();
+    auto innerArea = totalArea.reduced(50);
+    auto halfLeftArea = innerArea.withWidth(innerArea.getWidth() / 2);
+    auto leftQuarterArea = innerArea.withWidth(innerArea.getWidth() / 4);
+    auto inputMeterArea = leftQuarterArea.withWidth(leftQuarterArea.getWidth() - 50);
+    return inputMeterArea;
 }
 
-juce::Rectangle<int> GUIposition::getKnobsArea()
+juce::Rectangle<int> GUIposition::getOutputMeterArea()
 {
-    auto knobsAreaHeight = 170;
-    auto knobsArea = getWorkingArea().removeFromBottom(knobsAreaHeight);
+    auto totalArea = getLocalBounds();
+    auto innerArea = totalArea.reduced(50);
+    auto rightQuarterArea = innerArea.removeFromRight(innerArea.getWidth() / 4);
+    auto outputMeterArea = rightQuarterArea.withWidth(rightQuarterArea.getWidth() - 50).withX(rightQuarterArea.getX() + 50);
+    return outputMeterArea;
+}
 
-    return knobsArea;
+juce::Rectangle<int> GUIposition::getLeftComponentArea()
+{
+    auto totalArea = getLocalBounds();
+    auto innerArea = totalArea.reduced(50);
+    auto halfLeftArea = innerArea.withWidth(innerArea.getWidth() / 2);
+    auto leftQuarterArea = innerArea.withWidth(innerArea.getWidth() / 4);
+    auto leftComponentArea = halfLeftArea.removeFromRight(leftQuarterArea.getWidth());
+    return leftComponentArea;
+}
+
+juce::Rectangle<int> GUIposition::getRightComponentArea()
+{
+    auto totalArea = getLocalBounds();
+    auto innerArea = totalArea.reduced(50);
+    auto rightQuarterArea = innerArea.removeFromRight(innerArea.getWidth() / 4);
+    auto rightComponentArea = innerArea.removeFromRight(innerArea.getWidth() / 2);
+    rightComponentArea.removeFromLeft(rightQuarterArea.getWidth());
+    return rightComponentArea;
+}
+
+void GUIposition::paint(juce::Graphics& g) //Only to check
+{
+    g.setColour(juce::Colours::yellow);
+    g.drawRect(getInputMeterArea());
+    g.drawRect(getOutputMeterArea());
+   
+    g.setColour(juce::Colours::aliceblue);
+    g.drawRect(getLeftComponentArea());
+    g.drawRect(getRightComponentArea());
 }

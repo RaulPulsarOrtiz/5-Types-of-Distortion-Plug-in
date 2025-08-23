@@ -31,5 +31,5 @@ private:
     /** Reference to the SoftClipProcessor class through a pointer to access and control SoftClipProcessor class member functions */
     SoftClipProcessor* softClipProcessPtr {nullptr};
         
-    GUIposition guiPosition;
+   // GUIposition guiPosition;
  };

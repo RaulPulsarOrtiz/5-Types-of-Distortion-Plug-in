@@ -16,8 +16,12 @@ public:
     /** Rectangles to divide the whole Plug-in area in smaller areas to place the different components*/
    
     /*@return the whole area minus some borders at the edges*/
-    juce::Rectangle<int> getWorkingArea();
-    juce::Rectangle<int> getAnalyserArea();
-    juce::Rectangle<int> getKnobsArea();
+    void paint(juce::Graphics& g) override;
+    juce::Rectangle<int> getInnerArea();
+    juce::Rectangle<int> getInputMeterArea();
+    juce::Rectangle<int> getOutputMeterArea();
+    juce::Rectangle<int> getLeftComponentArea();
+    juce::Rectangle<int> getRightComponentArea();
 private:
+  //  juce::Rectangle<int> halfLeftArea, leftQuarterArea, rightQuarterArea;
 };

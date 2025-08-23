@@ -14,6 +14,7 @@
 #include "SoftClipGUI.h"
 //QuarterCicle is empty at the moment
 #include "AsymmetricalGUI.h"
+#include "GUIposition.h"
 
 //==============================================================================
 /**
@@ -53,5 +54,6 @@ private:
     juce::Rectangle<int> getWorkingArea();
     juce::Rectangle<int> getAnalyserArea();
     juce::Rectangle<int> getKnobsArea();
+    GUIposition guiPosition;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TypesofDistortionAudioProcessorEditor)
 };

@@ -18,7 +18,7 @@ SoftClipGUI::SoftClipGUI()
     softCurveSldr.setTextBoxStyle(Slider::TextBoxAbove, true, 60, 15);
     softCurveSldr.addListener(this);
     addAndMakeVisible(softCurveSldr);
-    softCurveSldr.setVisible(false);
+    softCurveSldr.setVisible(true);
 
     softCurveText.setText("Curve Value", dontSendNotification);
     softCurveText.setColour(Label::ColourIds::outlineColourId, Colours::wheat);
@@ -37,17 +37,19 @@ void SoftClipGUI::sliderValueChanged(Slider* slider)
 
 void SoftClipGUI::resized()
 {
-    auto area = guiPosition.getWorkingArea();
-    auto knobsArea = guiPosition.getKnobsArea();
+  //  guiPosition.setBounds(getLocalBounds());
+  
+        auto area = getLocalBounds();
 
-    softCurveSldr.setBounds(knobsArea.removeFromLeft(150));
-    softCurveSldr.setSize(100, 100);
+        // now position the slider within SoftClipGUI
+        auto softCurveSldrPos = area.removeFromTop(120).withSizeKeepingCentre(100, 100);
+        softCurveSldr.setBounds(softCurveSldrPos);
 
-    Rectangle <int> softCurveSldrPos = softCurveSldr.getBounds();
-    int posX = softCurveSldrPos.getCentreX();
-    int posY = softCurveSldrPos.getCentreY();
-
-    softCurveText.setBounds((posX - 45), (posY + 50), 80, 15);
+  //  Rectangle <int> softCurveSldrPos = softCurveSldr.getBounds();
+  //  int posX = softCurveSldrPos.getCentreX();
+  //  int posY = softCurveSldrPos.getCentreY();
+  //
+  //  softCurveText.setBounds((posX - 45), (posY + 50), 80, 15);
    // clipGainValuesText.setBounds((posX - 32), (posY + 70), 100, 15);
 }
 

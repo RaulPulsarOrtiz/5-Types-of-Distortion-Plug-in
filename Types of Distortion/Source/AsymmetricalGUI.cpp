@@ -38,17 +38,17 @@ void AsymmetricalGUI::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    auto area = guiPosition.getWorkingArea();
-    auto knobsArea = guiPosition.getKnobsArea();
-
-    asymVariableSldr.setBounds(knobsArea.removeFromLeft(150));
-    asymVariableSldr.setSize(100, 100);
-
-    Rectangle <int> asymmetricSldrPos = asymVariableSldr.getBounds();
-    int posX = asymmetricSldrPos.getCentreX();
-    int posY = asymmetricSldrPos.getCentreY();
-
-    asymVariableText.setBounds((posX - 60), (posY + 50), 115, 15);
+  //  auto area = guiPosition.getWorkingArea();
+  //  auto knobsArea = guiPosition.getKnobsArea();
+  //
+  //  asymVariableSldr.setBounds(knobsArea.removeFromLeft(150));
+  //  asymVariableSldr.setSize(100, 100);
+  //
+  //  Rectangle <int> asymmetricSldrPos = asymVariableSldr.getBounds();
+  //  int posX = asymmetricSldrPos.getCentreX();
+  //  int posY = asymmetricSldrPos.getCentreY();
+  //
+  //  asymVariableText.setBounds((posX - 60), (posY + 50), 115, 15);
 }
 
 void AsymmetricalGUI::setAsymmetrical(AsymmetricalProcessor* asymmetricProcessptr)
