@@ -11,7 +11,9 @@
 
 //==============================================================================
 TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(TypesofDistortionAudioProcessor& p)
-    : AudioProcessorEditor(&p), audioProcessor(p)
+    : AudioProcessorEditor(&p), audioProcessor(p), 
+    inputMeterL([&]() { return audioProcessor.getInputSignal(0); }), inputMeterR([&]() { return audioProcessor.getInputSignal(1); }),
+    outputMeterL([&]() { return audioProcessor.getOutputSignal(0); }), outputMeterR([&]() { return audioProcessor.getOutputSignal(1); })
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
@@ -83,6 +85,10 @@ TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(Typ
     dryWetText.setColour(Label::ColourIds::outlineColourId, Colours::wheat);
     addAndMakeVisible(dryWetText);
   
+    addAndMakeVisible(inputMeterL);
+    addAndMakeVisible(inputMeterR);
+    addAndMakeVisible(outputMeterL);
+    addAndMakeVisible(outputMeterR);
 }
 
 TypesofDistortionAudioProcessorEditor::~TypesofDistortionAudioProcessorEditor()
@@ -161,8 +167,12 @@ void TypesofDistortionAudioProcessorEditor::resized()
 
     guiPosition.setBounds(area);
 
-     auto softClipGUIPos = guiPosition.getLeftComponentArea();
-     softClipGUI.setBounds(softClipGUIPos);
+    distortionTypeMenu.setBounds(guiPosition.getInnerArea().withSizeKeepingCentre(300, 30).withY(30));
+
+    auto leftComponentPos = guiPosition.getLeftComponentArea();
+    leftComponentPos.removeFromRight(100);
+    softClipGUI.setBounds(leftComponentPos);
+    asymmetricalGUI.setBounds(leftComponentPos);
     //juce::Rectangle<int> getInputMeterArea();
     //juce::Rectangle<int> getOuputMeterArea();
     //juce::Rectangle<int> getLeftComponentArea();
@@ -179,22 +189,32 @@ void TypesofDistortionAudioProcessorEditor::resized()
    // auto middlePointX = innerArea.getCentreX();
    // auto middlePointY = innerArea.getCentreY();
 
-
+    auto hardClipGUIPos = guiPosition.getCentre();   
+    hardClipGUI.setBounds(hardClipGUIPos.x - hardClipGUI.sliderWidth / 2, hardClipGUIPos.y - (hardClipGUI.sliderHeight / 2), hardClipGUI.sliderWidth, hardClipGUI.sliderHeight);
 
    // hardClipGUI.setBounds(middlePointX, middlePointY, 200, 200);
   //  softClipGUI.setBounds(leftComponentArea.removeFromTop(150));
     
    // auto softClipGUIPos = leftComponentArea.removeFromTop(150);
    // softClipGUI.setBounds(softClipGUIPos);
-   // //asymmetricalGUI.setBounds(leftComponentArea.removeFromBottom(150));
+
    //
     auto outputGainSldrPos = guiPosition.getRightComponentArea();
     outputGainSldrPos = outputGainSldrPos.removeFromBottom(100);
     outputGainSldrPos = outputGainSldrPos.translated(40, 0);
     outputGainSldr.setBounds(outputGainSldrPos);
-      // 
-    auto dryWetSldrPos = outputGainSldrPos.translated(-110, 0);
+    auto dryWetSldrPos = outputGainSldrPos.translated(-100, 0);
     dryWetSldr.setBounds(dryWetSldrPos);
+
+    auto cutoffSldrPos = guiPosition.getRightComponentArea();
+    cutoffSldrPos = cutoffSldrPos.removeFromTop(120);
+    cutoffSldrPos = cutoffSldrPos.translated(40, 0);
+    cutoffSldr.setBounds(cutoffSldrPos);
+
+    auto filterTypeMenuPos = guiPosition.getRightComponentArea();
+    filterTypeMenuPos = filterTypeMenuPos.removeFromTop(50);
+    filterTypeMenuPos = filterTypeMenuPos.translated(-60, 20);
+    filterTypeMenu.setBounds(filterTypeMenuPos);
    //
    // outputGainSldr.setSize(100, 100);
    //
@@ -203,22 +223,15 @@ void TypesofDistortionAudioProcessorEditor::resized()
    // int outPosY = outputSldrPos.getCentreY();
    // outputGainText.setBounds((outPosX - 40), (outPosY + 50), 80, 15);
    //
-   // distortionTypeMenu.setBounds(leftComponentArea);
-   //    
-     auto cutoffSldrPos = guiPosition.getRightComponentArea();
-     cutoffSldrPos = cutoffSldrPos.removeFromTop(120);
-     cutoffSldrPos = cutoffSldrPos.translated(40, 0);
-     cutoffSldr.setBounds(cutoffSldrPos);
+    //auto distortionTypeMenuPos = guiPosition.getCentre();    
+
  ////   cutoffSldr.setBounds(rightComponentArea.removeFromLeft(150));
    // cutoffSldr.setSize(100, 100);
    // Rectangle <int> cutoffSldrPos = cutoffSldr.getBounds();
    // int cutPosX = cutoffSldrPos.getCentreX();
    // int cutPosY = cutoffSldrPos.getCentreY();
    // cutoffText.setBounds((cutPosX - 40), (cutPosY + 50), 80, 15);
-      auto filterTypeMenuPos = guiPosition.getRightComponentArea();
-      filterTypeMenuPos = filterTypeMenuPos.removeFromTop(50);
-      filterTypeMenuPos = filterTypeMenuPos.translated(-70, 20);
-      filterTypeMenu.setBounds(filterTypeMenuPos);
+
      
     // filterTypeMenu.setSize(100, 40);
 
@@ -229,6 +242,11 @@ void TypesofDistortionAudioProcessorEditor::resized()
     //int dryPosX = dryWetSldrPos.getCentreX();
     //int dryPosY = dryWetSldrPos.getCentreY();
     //dryWetText.setBounds((dryPosX - 30), (dryPosY + 50), 60, 15);
+    inputMeterL.setBounds(guiPosition.getInputMeterArea(0));
+    inputMeterR.setBounds(guiPosition.getInputMeterArea(1));
+    outputMeterL.setBounds(guiPosition.getOutputMeterArea(0));
+    outputMeterR.setBounds(guiPosition.getOutputMeterArea(1));
+    
 }
 
 void TypesofDistortionAudioProcessorEditor::sliderValueChanged(Slider* slider)

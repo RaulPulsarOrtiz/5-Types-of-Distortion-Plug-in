@@ -18,7 +18,7 @@ AsymmetricalGUI::AsymmetricalGUI()
     asymVariableSldr.setTextBoxStyle(Slider::TextBoxAbove, true, 60, 15);
     asymVariableSldr.addListener(this);
     addAndMakeVisible(asymVariableSldr);
-    asymVariableSldr.setVisible(false);
+    asymVariableSldr.setVisible(true);
 
     asymVariableText.setText("Asymmetric Value", dontSendNotification);
     asymVariableText.setColour(Label::ColourIds::outlineColourId, Colours::wheat);
@@ -49,6 +49,9 @@ void AsymmetricalGUI::resized()
   //  int posY = asymmetricSldrPos.getCentreY();
   //
   //  asymVariableText.setBounds((posX - 60), (posY + 50), 115, 15);
+    auto area = getLocalBounds();
+    auto asymmetricalGUIPos = area.removeFromBottom(100);
+    asymVariableSldr.setBounds(asymmetricalGUIPos);
 }
 
 void AsymmetricalGUI::setAsymmetrical(AsymmetricalProcessor* asymmetricProcessptr)

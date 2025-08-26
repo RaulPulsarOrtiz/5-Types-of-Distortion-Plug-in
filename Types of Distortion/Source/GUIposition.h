@@ -18,10 +18,11 @@ public:
     /*@return the whole area minus some borders at the edges*/
     void paint(juce::Graphics& g) override;
     juce::Rectangle<int> getInnerArea();
-    juce::Rectangle<int> getInputMeterArea();
-    juce::Rectangle<int> getOutputMeterArea();
+    juce::Rectangle<int> getInputMeterArea(int channel);
+    juce::Rectangle<int> getOutputMeterArea(int channel);
     juce::Rectangle<int> getLeftComponentArea();
     juce::Rectangle<int> getRightComponentArea();
+    juce::Point<int> getCentre();
 private:
   //  juce::Rectangle<int> halfLeftArea, leftQuarterArea, rightQuarterArea;
 };

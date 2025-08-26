@@ -15,6 +15,7 @@
 //QuarterCicle is empty at the moment
 #include "AsymmetricalGUI.h"
 #include "GUIposition.h"
+#include "dBMeter.h"
 
 //==============================================================================
 /**
@@ -55,5 +56,6 @@ private:
     juce::Rectangle<int> getAnalyserArea();
     juce::Rectangle<int> getKnobsArea();
     GUIposition guiPosition;
+    VerticalMeter inputMeterL, inputMeterR, outputMeterL, outputMeterR;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TypesofDistortionAudioProcessorEditor)
 };

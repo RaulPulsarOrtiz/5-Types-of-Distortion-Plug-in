@@ -106,6 +106,9 @@ public:
 
     /**Function to set a new type of Filter to the filterType variable from the enum FilterType*/
     void setFilterType (FilterType filterType);
+   
+    float getInputSignal(int channel);
+    float getOutputSignal(int channel);
 
 private:
 
@@ -119,6 +122,8 @@ private:
     std::atomic<int> freqCutoff = 20000;
     void reset() override;
     dsp::StateVariableTPTFilter<float> filter;
+
+    float inputSignalL{ 0.f }, inputSignalR{ 0.f }, outputSignalL{ 0.f }, outputSignalR{ 0.f };
 
     /**Objects of the classes for each distortion type process: */
     HardClipProcessor hardClipProcessor;

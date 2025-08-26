@@ -53,6 +53,12 @@ void HardClipGUI::resized()
    //
    // clipGainText.setBounds((posX - 50), (posY + 50), 100, 15);
    // clipGainValuesText.setBounds((posX - 32), (posY + 70), 100, 15);
+
+    sliderWidth = 100;
+    sliderHeight = 100;
+
+    auto area = getLocalBounds();
+    clippingGainSldr.setBounds(area);
  }
 
 void HardClipGUI::setHardClip(HardClipProcessor* hardClipPorcessorptr)

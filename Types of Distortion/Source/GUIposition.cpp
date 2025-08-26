@@ -31,23 +31,44 @@ juce::Rectangle<int> GUIposition::getInnerArea()
     return innerArea;
 }
 
-juce::Rectangle<int> GUIposition::getInputMeterArea()
+juce::Rectangle<int> GUIposition::getInputMeterArea(int channel)
 {
     auto totalArea = getLocalBounds();
     auto innerArea = totalArea.reduced(50);
     auto halfLeftArea = innerArea.withWidth(innerArea.getWidth() / 2);
     auto leftQuarterArea = innerArea.withWidth(innerArea.getWidth() / 4);
     auto inputMeterArea = leftQuarterArea.withWidth(leftQuarterArea.getWidth() - 50);
-    return inputMeterArea;
+    auto inputMeterAreaL = inputMeterArea.withWidth(inputMeterArea.getWidth() / 2);
+    auto inputMeterAreaR = inputMeterArea.removeFromRight(inputMeterAreaL.getWidth());
+   
+    if (channel == 0)
+    {
+        return inputMeterAreaL;
+    }
+    else if (channel == 1)
+    {
+        return inputMeterAreaR;
+    }
+    
 }
 
-juce::Rectangle<int> GUIposition::getOutputMeterArea()
+juce::Rectangle<int> GUIposition::getOutputMeterArea(int channel)
 {
     auto totalArea = getLocalBounds();
     auto innerArea = totalArea.reduced(50);
     auto rightQuarterArea = innerArea.removeFromRight(innerArea.getWidth() / 4);
     auto outputMeterArea = rightQuarterArea.withWidth(rightQuarterArea.getWidth() - 50).withX(rightQuarterArea.getX() + 50);
-    return outputMeterArea;
+    auto outputMeterAreaL = outputMeterArea.withWidth(outputMeterArea.getWidth() / 2);
+    auto outputMeterAreaR = outputMeterArea.removeFromRight(outputMeterAreaL.getWidth());
+
+    if (channel == 0)
+    {
+        return outputMeterAreaL;
+    }
+    else if (channel == 1)
+    {
+        return outputMeterAreaR;
+    }
 }
 
 juce::Rectangle<int> GUIposition::getLeftComponentArea()
@@ -70,12 +91,25 @@ juce::Rectangle<int> GUIposition::getRightComponentArea()
     return rightComponentArea;
 }
 
+juce::Point<int> GUIposition::getCentre()
+{
+    auto totalArea = getLocalBounds();
+    auto innerArea = totalArea.reduced(50);
+    auto centrePoint = innerArea.getCentre();
+    return centrePoint;
+}
+
+
 void GUIposition::paint(juce::Graphics& g) //Only to check
 {
     g.setColour(juce::Colours::yellow);
-    g.drawRect(getInputMeterArea());
-    g.drawRect(getOutputMeterArea());
-   
+    g.drawRect(getInputMeterArea(0));
+    g.drawRect(getOutputMeterArea(0));
+
+    g.setColour(juce::Colours::darkred);
+    g.drawRect(getInputMeterArea(1));
+    g.drawRect(getOutputMeterArea(1));
+
     g.setColour(juce::Colours::aliceblue);
     g.drawRect(getLeftComponentArea());
     g.drawRect(getRightComponentArea());

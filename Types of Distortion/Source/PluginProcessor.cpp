@@ -143,6 +143,30 @@ void TypesofDistortionAudioProcessor::setDistortionType(TypeOfDistortion newType
     typeOfDistortion = newType;
 }
 
+float TypesofDistortionAudioProcessor::getInputSignal(int channel)
+{
+    if (channel == 0)
+    {
+        return inputSignalL; 
+    }
+    else if (channel == 1)
+    {
+        return inputSignalR;
+    }
+}
+
+float TypesofDistortionAudioProcessor::getOutputSignal(int channel)
+{
+    if (channel == 0)
+    {
+        return outputSignalL;
+    }
+    else if (channel == 1)
+    {
+        return outputSignalR;
+    }
+}
+
 void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     float fMix = 0;
@@ -165,11 +189,16 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
+   
+    inputSignalL = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
+    inputSignalR = buffer.getRMSLevel(1, 0, buffer.getNumSamples());
+
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer (channel);
         
         // ..do something to the data...
+        
 
         if (typeOfDistortion == Off)
         {
@@ -180,6 +209,8 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
            //     channelData[sample] = fMix;
            // channelData[sample] *= outputGain;
            // }
+            outputSignalL = inputSignalL;
+            outputSignalR = inputSignalR;
         }
 
         if (typeOfDistortion == HardClipType)
@@ -197,7 +228,6 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
                 channelData[sample] = (fWet * wetAmount.load()) + (fDry * dryAmount.load());
                 
                 channelData[sample] *= outputGain.load();
-
             }
         }
         
@@ -257,6 +287,11 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
                 
             }
         }
+
+        if (channel == 0)
+            outputSignalL = buffer.getRMSLevel(channel, 0, buffer.getNumSamples());
+        else if (channel == 1)
+            outputSignalR = buffer.getRMSLevel(channel, 0, buffer.getNumSamples());
     }
 
 }

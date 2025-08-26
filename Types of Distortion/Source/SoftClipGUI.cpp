@@ -23,7 +23,7 @@ SoftClipGUI::SoftClipGUI()
     softCurveText.setText("Curve Value", dontSendNotification);
     softCurveText.setColour(Label::ColourIds::outlineColourId, Colours::wheat);
     addAndMakeVisible(softCurveText);
-    softCurveText.setVisible(false);
+    softCurveText.setVisible(true);
    }
 
 void SoftClipGUI::sliderValueChanged(Slider* slider)
