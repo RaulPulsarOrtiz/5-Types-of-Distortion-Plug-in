@@ -123,7 +123,7 @@ private:
     void reset() override;
     dsp::StateVariableTPTFilter<float> filter;
 
-    float inputSignalL{ 0.f }, inputSignalR{ 0.f }, outputSignalL{ 0.f }, outputSignalR{ 0.f };
+    float inputSignalL{ -60.f }, inputSignalR{ -60.f }, outputSignalL{ -60.f }, outputSignalR{ -60.f };
 
     /**Objects of the classes for each distortion type process: */
     HardClipProcessor hardClipProcessor;

@@ -195,20 +195,20 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
 
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
-        auto* channelData = buffer.getWritePointer (channel);
-        
+        auto* channelData = buffer.getWritePointer(channel);
+
         // ..do something to the data...
-        
+
 
         if (typeOfDistortion == Off)
         {
-           // for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-           // {
-           //     channelData[sample] = buffer.getSample(channel, sample);
-           //     fMix = channelData[sample];
-           //     channelData[sample] = fMix;
-           // channelData[sample] *= outputGain;
-           // }
+            // for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+            // {
+            //     channelData[sample] = buffer.getSample(channel, sample);
+            //     fMix = channelData[sample];
+            //     channelData[sample] = fMix;
+            // channelData[sample] *= outputGain;
+            // }
             outputSignalL = inputSignalL;
             outputSignalR = inputSignalR;
         }
@@ -219,18 +219,18 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
             {
                 channelData[sample] = buffer.getSample(channel, sample);
                 fDry = channelData[sample];
-                
+
                 fMix = channelData[sample] * hardClipProcessor.getClippingGain();
                 float fClipped = hardClipProcessor.hardClipping(fMix);
-                               
+
                 float fFiltered = filter.processSample(channel, fClipped);
                 fWet = fFiltered;
                 channelData[sample] = (fWet * wetAmount.load()) + (fDry * dryAmount.load());
-                
+
                 channelData[sample] *= outputGain.load();
             }
         }
-        
+
         else if (typeOfDistortion == SoftClipType)
         {
             for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
@@ -240,7 +240,7 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
                 fMix = channelData[sample] * (hardClipProcessor.getClippingGain() * 0.17); //Reduce the range of scale from 1 - 30 to 1 - 5.1
 
                 float hardClipped = hardClipProcessor.hardClipping(fMix);
-           
+
                 channelData[sample] = softClipProcessor.softClipping(hardClipped, softClipProcessor.getSoftCurve());
                 float fFiltered = filter.processSample(channel, channelData[sample]);
                 fWet = fFiltered;
@@ -284,14 +284,20 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
                 fWet = fFiltered;
                 channelData[sample] = (fWet * wetAmount.load()) + (fDry * dryAmount.load());
                 channelData[sample] *= outputGain.load();
-                
+
             }
         }
 
         if (channel == 0)
+        {
             outputSignalL = buffer.getRMSLevel(channel, 0, buffer.getNumSamples());
+            outputSignalL = juce::Decibels::gainToDecibels(outputSignalL);
+        }
         else if (channel == 1)
+        {
             outputSignalR = buffer.getRMSLevel(channel, 0, buffer.getNumSamples());
+            outputSignalR = juce::Decibels::gainToDecibels(outputSignalR);
+        }
     }
 
 }
