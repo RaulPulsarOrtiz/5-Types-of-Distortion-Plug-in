@@ -14,9 +14,11 @@ HardClipGUI::HardClipGUI()
 {
     clippingGainSldr.setSliderStyle(Slider::Rotary);
     //setTextBoxStyle()
-    clippingGainSldr.setRange(1, 10, 1);
-    clippingGainSldr.setValue(1);
+    clippingGainSldr.setRange(1.f, 4.f, 0.165f); //This is linear but when being transform in dB it will go from 0db to +12 dB
+    clippingGainSldr.setValue(1.f);
     clippingGainSldr.setTextBoxStyle(Slider::TextBoxAbove, true, 40, 15);
+    clippingGainSldr.setTextValueSuffix("dB");
+
     clippingGainSldr.addListener(this);
     addAndMakeVisible(clippingGainSldr);
 

@@ -27,5 +27,5 @@ public:
 	int getClippingGain();
 	
 private:
-	std::atomic<int> clippingGain = 1;
+	std::atomic<float> clippingGain = 1.f; //This is already in dB
 };

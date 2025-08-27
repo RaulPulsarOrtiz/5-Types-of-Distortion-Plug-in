@@ -22,7 +22,9 @@ float HardClipProcessor::hardClipping(float input)
         return -1.f;
     }
     else
+    {
         return input;
+    }
 }
 
 void HardClipProcessor::setClippingGain(int newClippingGain)
