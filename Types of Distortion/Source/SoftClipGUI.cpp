@@ -14,7 +14,7 @@ SoftClipGUI::SoftClipGUI()
 {
     softCurveSldr.setSliderStyle(Slider::Rotary);
     softCurveSldr.setRange(10, 10000);
-    softCurveSldr.setValue(10);
+   // softCurveSldr.setValue(10);
     softCurveSldr.setTextBoxStyle(Slider::TextBoxAbove, true, 60, 15);
     softCurveSldr.addListener(this);
     addAndMakeVisible(softCurveSldr);

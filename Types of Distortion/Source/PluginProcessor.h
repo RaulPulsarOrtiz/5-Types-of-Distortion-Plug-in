@@ -121,9 +121,12 @@ private:
 
     std::atomic<int> freqCutoff = 20000;
     void reset() override;
-    dsp::StateVariableTPTFilter<float> filter;
+    dsp::StateVariableTPTFilter<float> filterL, filterR;
 
     float inputSignalL{ -60.f }, inputSignalR{ -60.f }, outputSignalL{ -60.f }, outputSignalR{ -60.f };
+
+    juce::SmoothedValue<float> autoGainL{ 1.0f };
+    juce::SmoothedValue<float> autoGainR{ 1.0f };
 
     /**Objects of the classes for each distortion type process: */
     HardClipProcessor hardClipProcessor;

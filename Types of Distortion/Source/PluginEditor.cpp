@@ -171,7 +171,8 @@ void TypesofDistortionAudioProcessorEditor::resized()
 
     auto leftComponentPos = guiPosition.getLeftComponentArea();
     leftComponentPos.removeFromRight(100);
-    softClipGUI.setBounds(leftComponentPos);
+    softClipGUI.setBounds(leftComponentPos.withHeight(200)); //Delete the with once I can move it with the mouse
+   // softClipGUI.setBounds(80, 100, 200, 150);
     asymmetricalGUI.setBounds(leftComponentPos);
     //juce::Rectangle<int> getInputMeterArea();
     //juce::Rectangle<int> getOuputMeterArea();
