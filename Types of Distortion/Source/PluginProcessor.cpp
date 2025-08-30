@@ -102,13 +102,21 @@ void TypesofDistortionAudioProcessor::prepareToPlay (double sampleRate, int samp
     spec.numChannels = getTotalNumInputChannels();
 
     filterL.prepare(spec);
-    reset();
-
+   
     filterR.prepare(spec);
-    reset();
 
-    autoGainL.reset(sampleRate, 0.05); // 20 ms smoothing
-    autoGainR.reset(sampleRate, 0.05);
+    autoGainL.reset(sampleRate, 0.02); // 20 ms smoothing
+    autoGainR.reset(sampleRate, 0.02);
+
+    reset();
+}
+
+void TypesofDistortionAudioProcessor::reset()
+{
+    filterL.reset();
+    filterR.reset();
+    autoGainL.setCurrentAndTargetValue(1.0f);
+    autoGainR.setCurrentAndTargetValue(1.0f);
 }
 
 void TypesofDistortionAudioProcessor::releaseResources()
@@ -204,6 +212,15 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
     inputSignalL = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
     inputSignalR = buffer.getRMSLevel(1, 0, buffer.getNumSamples());
     
+    // --- Compute correction factor from *previous block's* RMS --- //In this way I can used the Auto-Gain in this block instead of having it apply on block after. If I add this at the end of the block, the distortion occurs without any AutoGain applied yet.
+  
+    if (prevDistortedRMSOutputL > 0.0f)
+        correctionL = inputSignalL / prevDistortedRMSOutputL;
+        autoGainL.setTargetValue(correctionL);
+    if (numChannels > 1 && prevDistortedRMSOutputR > 0.0f)
+        correctionR = inputSignalR / prevDistortedRMSOutputR;
+        autoGainR.setTargetValue(correctionR);
+
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer(channel);
@@ -236,11 +253,8 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
                 fMix = channelData[sample] * hardClipProcessor.getClippingGain();
                 float fClipped = hardClipProcessor.hardClipping(fMix);
 
-                float fFiltered;
-                if (channel == 0)
-                    fFiltered = filterL.processSample(0, fClipped);
-                else if (channel == 1)
-                    fFiltered = filterR.processSample(1, fClipped);
+                float fFiltered = (channel == 0) ? filterL.processSample(0, channelData[sample]) : filterR.processSample(1, channelData[sample]);
+                
                 fWet = fFiltered;
                 channelData[sample] = (fWet * wetAmount.load()) + (fDry * dryAmount.load());
             }
@@ -258,20 +272,10 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
 
                 channelData[sample] = softClipProcessor.softClipping(hardClipped, softClipProcessor.getSoftCurve());
                
-                float fFiltered;
-                if (channel == 0)
-                {
-                    fFiltered = filterL.processSample(channel, channelData[sample]);
-                }
-                if (channel == 1)
-
-                {
-                    fFiltered = filterL.processSample(channel, channelData[sample]);
-                }
-                 
+                float fFiltered = (channel == 0) ? filterL.processSample(0, channelData[sample]) : filterR.processSample(1, channelData[sample]);
                 fWet = fFiltered;
+                
                 channelData[sample] = (fWet * wetAmount.load()) + (fDry * dryAmount.load());
-                //   channelData[sample] *= outputGain.load();
             }
         }
 
@@ -287,17 +291,9 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
                 hardClipped *= 0.4;
 
                 channelData[sample] = quarterCircleProcessor.quarterCircle(hardClipped);
-                float fFiltered;
-                if (channel == 0)
-                {
-                    fFiltered = filterL.processSample(channel, channelData[sample]);
-                }
-                if (channel == 1)
-
-                {
-                    fFiltered = filterL.processSample(channel, channelData[sample]);
-                }
+                float fFiltered = (channel == 0) ? filterL.processSample(0, channelData[sample]) : filterR.processSample(1, channelData[sample]);
                 fWet = fFiltered;
+                
                 channelData[sample] = (fWet * wetAmount.load()) + (fDry * dryAmount.load());
                 //   channelData[sample] *= outputGain.load();
                   // channelData[sample] *= 0.1;
@@ -316,50 +312,36 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
                 hardClipped *= 0.4;
 
                 channelData[sample] = asymmetricalProcessor.asymmetrical(hardClipped, asymmetricalProcessor.getAsymVariable());
-                float fFiltered;
-                if (channel == 0)
-                {
-                    fFiltered = filterL.processSample(channel, channelData[sample]);
-                }
-                if (channel == 1)
-
-                {
-                    fFiltered = filterL.processSample(channel, channelData[sample]);
-                }
+               
+                float fFiltered = (channel == 0) ? filterL.processSample(0, channelData[sample]) : filterR.processSample(1, channelData[sample]);
+                
                 fWet = fFiltered;
                 channelData[sample] = (fWet * wetAmount.load()) + (fDry * dryAmount.load());
+
                 //channelData[sample] *= outputGain.load();
                 //channelData[sample] *= 0.1;
             }
         }
     } 
+    
     //Now that both channel have been distorted. I can calculate the distorted rms and then the correction multiplier.
-    float correctionL = 1.0f;
-    float correctionR = 1.0f;
-            
-    float distortedRMSOutputL = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
-    if (distortedRMSOutputL > 0.0f) // avoid division by zero
-        correctionL = inputSignalL / distortedRMSOutputL;
+    // --- Store distorted RMS for next block's correction ---  
+    prevDistortedRMSOutputL = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
     if (numChannels > 1)
-    {
-        float distortedRMSOutputR = buffer.getRMSLevel(1, 0, buffer.getNumSamples());
-        if (distortedRMSOutputR > 0.0f)
-            correctionR = inputSignalR / distortedRMSOutputR;
-    }
-                
+        prevDistortedRMSOutputR = buffer.getRMSLevel(1, 0, buffer.getNumSamples());
+    
+                    
     autoGainL.setTargetValue(correctionL);
     if (numChannels > 1)
         autoGainR.setTargetValue(correctionR);
+   
+    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) 
+    { 
+        buffer.getWritePointer(0)[sample] *= autoGainL.getNextValue(); 
+    if (numChannels > 1) 
+        buffer.getWritePointer(1)[sample] *= autoGainR.getNextValue(); }
 
-    for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-    {
-        buffer.getWritePointer(0)[sample] *= autoGainL.getNextValue();
-
-        if (numChannels > 1)
-            buffer.getWritePointer(1)[sample] *= autoGainR.getNextValue();
-    }                   
-          
-   // buffer.applyGain(outputGain.load()); // This is faster and cleaner than "channelData[sample] *= outputGain.load();" which would run a multiplication unce per sample       
+    buffer.applyGain(outputGain.load()); // This is faster and cleaner than "channelData[sample] *= outputGain.load();" which would run a multiplication unce per sample       
             
     outputSignalL = buffer.getRMSLevel(0, 0, buffer.getNumSamples());          
     outputSignalL = juce::Decibels::gainToDecibels(outputSignalL);
@@ -448,11 +430,6 @@ void TypesofDistortionAudioProcessor::setFilterType(FilterType newFilterType)
 
 
 //==============================================================================
-void TypesofDistortionAudioProcessor::reset()
-{
-    filterL.reset();
-    filterR.reset();
-}
 
 //==============================================================================
 // This creates new instances of the plugin..
