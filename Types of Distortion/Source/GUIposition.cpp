@@ -22,7 +22,6 @@
 //auto middlePointX = innerArea.getCentreX();
 //auto middlePointY = innerArea.getCentreY();
 
-
 juce::Rectangle<int> GUIposition::getInnerArea()
 {
     auto totalArea = getLocalBounds();
@@ -105,11 +104,11 @@ void GUIposition::paint(juce::Graphics& g) //Only to check
     g.setColour(juce::Colours::yellow);
     g.drawRect(getInputMeterArea(0));
     g.drawRect(getOutputMeterArea(0));
-
+   
     g.setColour(juce::Colours::darkred);
     g.drawRect(getInputMeterArea(1));
     g.drawRect(getOutputMeterArea(1));
-
+   
     g.setColour(juce::Colours::aliceblue);
     g.drawRect(getLeftComponentArea());
     g.drawRect(getRightComponentArea());

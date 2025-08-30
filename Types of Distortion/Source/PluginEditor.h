@@ -52,9 +52,6 @@ private:
     Slider outputGainSldr, cutoffSldr, dryWetSldr;
     Label outputGainText, cutoffText, dryWetText;
 
-    juce::Rectangle<int> getWorkingArea();
-    juce::Rectangle<int> getAnalyserArea();
-    juce::Rectangle<int> getKnobsArea();
     GUIposition guiPosition;
     VerticalMeter inputMeterL, inputMeterR, outputMeterL, outputMeterR;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TypesofDistortionAudioProcessorEditor)

@@ -50,8 +50,9 @@ void AsymmetricalGUI::resized()
   //
   //  asymVariableText.setBounds((posX - 60), (posY + 50), 115, 15);
     auto area = getLocalBounds();
-    auto asymmetricalGUIPos = area.removeFromBottom(100);
+    auto asymmetricalGUIPos = area.removeFromBottom(100).withSizeKeepingCentre(100, 100);
     asymVariableSldr.setBounds(asymmetricalGUIPos);
+    
 }
 
 void AsymmetricalGUI::setAsymmetrical(AsymmetricalProcessor* asymmetricProcessptr)

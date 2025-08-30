@@ -349,7 +349,8 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
           outputSignalR = buffer.getRMSLevel(1, 0, buffer.getNumSamples());
           outputSignalR = juce::Decibels::gainToDecibels(outputSignalR);         
 }
-
+// AutoGain Fix v1”
+// 
 //==============================================================================
 bool TypesofDistortionAudioProcessor::hasEditor() const
 {

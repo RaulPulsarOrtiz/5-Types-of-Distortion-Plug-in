@@ -23,7 +23,8 @@ TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(Typ
     softClipGUI.setSoftClip(audioProcessor.getSoftClip());
    //No GUI for QuarterCicle?
     asymmetricalGUI.setAsymmetrical(audioProcessor.getAsymmetrical());
-
+   
+    guiPosition.setInterceptsMouseClicks(false, false);
     addAndMakeVisible(guiPosition);//Just for paint()???? It need to be first to don't cover the rest of Components
 
     distortionTypeMenu.addItem("Off", 1);
@@ -37,6 +38,7 @@ TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(Typ
    
     addAndMakeVisible(hardClipGUI);
     addAndMakeVisible(softClipGUI);
+    softClipGUI.isAlwaysOnTop();
     //QuarterCicle
     addAndMakeVisible(asymmetricalGUI);
 
@@ -122,36 +124,6 @@ void TypesofDistortionAudioProcessorEditor::paint(juce::Graphics& g)
 
 }
 
-juce::Rectangle<int> TypesofDistortionAudioProcessorEditor::getWorkingArea()
-{
-    auto bounds = getLocalBounds();
-    //  bounds.reduce(15, //JUCE_LIVE_CONSTANT(5),
-    //                20); //JUCE_LIVE_CONSTANT(5));
-    bounds.removeFromTop(20);
-    bounds.removeFromBottom(20);
-    bounds.removeFromLeft(20);
-    bounds.removeFromRight(20);
-
-    return bounds;
-}
-
-juce::Rectangle<int> TypesofDistortionAudioProcessorEditor::getAnalyserArea()
-{
-    auto analyserAreaHeight = 300;
-    auto analyserAreaWidth = 300;
-    auto analyserArea = getWorkingArea().removeFromTop(analyserAreaHeight);
-    analyserArea = getWorkingArea().removeFromTop(analyserAreaWidth);
-    return analyserArea;
-}
-
-juce::Rectangle<int> TypesofDistortionAudioProcessorEditor::getKnobsArea()
-{
-    auto knobsAreaHeight = 170;
-    auto knobsArea = getWorkingArea().removeFromBottom(knobsAreaHeight);
-  
-    return knobsArea;
-}
-
 void TypesofDistortionAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
@@ -167,13 +139,15 @@ void TypesofDistortionAudioProcessorEditor::resized()
 
     guiPosition.setBounds(area);
 
-    distortionTypeMenu.setBounds(guiPosition.getInnerArea().withSizeKeepingCentre(300, 30).withY(30));
+    distortionTypeMenu.setBounds(guiPosition.getInnerArea().withSizeKeepingCentre(200, 30).withY(30));
 
     auto leftComponentPos = guiPosition.getLeftComponentArea();
-    leftComponentPos.removeFromRight(100);
-    softClipGUI.setBounds(leftComponentPos.withHeight(200)); //Delete the with once I can move it with the mouse
-   // softClipGUI.setBounds(80, 100, 200, 150);
-    asymmetricalGUI.setBounds(leftComponentPos);
+   // leftComponentPos.removeFromRight(100);
+    auto softClipPos = leftComponentPos.removeFromTop(200);
+    softClipPos.removeFromRight(100);
+    softClipGUI.setBounds(softClipPos); //Delete the with once I can move it with the mouse
+    //softClipGUI.setBounds(80, 100, 200, 150);
+    asymmetricalGUI.setBounds(leftComponentPos.removeFromLeft(100));
     //juce::Rectangle<int> getInputMeterArea();
     //juce::Rectangle<int> getOuputMeterArea();
     //juce::Rectangle<int> getLeftComponentArea();
