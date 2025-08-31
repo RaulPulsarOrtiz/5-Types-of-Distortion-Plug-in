@@ -95,17 +95,17 @@ public:
     void setDistortionType(TypeOfDistortion newType);
 
     /** enum with two types of filters*/
-    enum FilterType
-    {
-        LowPass,
-        HighPass
-    };
+    //enum FilterType
+    //{
+    //    LowPass,
+    //    HighPass
+    //};
 
     /**  this variable can be set on 2 different types of Filters. It's set on the Editor comboBox*/
-    FilterType filterType;
+  //  FilterType filterType;
 
     /**Function to set a new type of Filter to the filterType variable from the enum FilterType*/
-    void setFilterType (FilterType filterType);
+    void setFilterType (juce::dsp::StateVariableTPTFilterType newType);
    
     float getInputSignal(int channel);
     float getOutputSignal(int channel);

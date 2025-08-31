@@ -75,6 +75,7 @@ TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(Typ
     
     filterTypeMenu.addItem("LPF", 1);
     filterTypeMenu.addItem("HPF", 2);
+    filterTypeMenu.setSelectedId(1, juce::dontSendNotification);
     filterTypeMenu.setText("Filter Type:", dontSendNotification);
     filterTypeMenu.addListener(this);
     addAndMakeVisible(filterTypeMenu);
@@ -294,15 +295,16 @@ void TypesofDistortionAudioProcessorEditor::comboBoxChanged(ComboBox* comboBoxTh
     }
     if (comboBoxThatHasChanged == &filterTypeMenu)
     {
+
         if (filterTypeMenu.getSelectedId() == 1) //LPF
         {
-            audioProcessor.setFilterType(audioProcessor.LowPass);
+            audioProcessor.setFilterType(juce::dsp::StateVariableTPTFilterType::lowpass);
             cutoffSldr.setValue(20000);
         }
 
         else if (filterTypeMenu.getSelectedId() == 2) //HPF
         {
-            audioProcessor.setFilterType(audioProcessor.HighPass);
+            audioProcessor.setFilterType(juce::dsp::StateVariableTPTFilterType::highpass);
             cutoffSldr.setValue(20);
         }
     }

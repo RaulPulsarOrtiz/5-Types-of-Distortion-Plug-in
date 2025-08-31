@@ -101,8 +101,7 @@ void TypesofDistortionAudioProcessor::prepareToPlay (double sampleRate, int samp
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumInputChannels();
 
-    filterL.prepare(spec);
-   
+    filterL.prepare(spec); 
     filterR.prepare(spec);
 
     autoGainL.reset(sampleRate, 0.02); // 20 ms smoothing
@@ -155,6 +154,12 @@ bool TypesofDistortionAudioProcessor::isBusesLayoutSupported (const BusesLayout&
 void TypesofDistortionAudioProcessor::setDistortionType(TypeOfDistortion newType)
 {
     typeOfDistortion = newType;
+}
+
+void TypesofDistortionAudioProcessor::setFilterType(juce::dsp::StateVariableTPTFilterType newType)
+{
+    filterL.setType(newType);
+    filterR.setType(newType);
 }
 
 float TypesofDistortionAudioProcessor::getInputSignal(int channel)
@@ -220,107 +225,67 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
     if (numChannels > 1 && prevDistortedRMSOutputR > 0.0f)
         correctionR = inputSignalR / prevDistortedRMSOutputR;
         autoGainR.setTargetValue(correctionR);
+      
 
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer(channel);
 
         // ..do something to the data...
-
-
-        if (typeOfDistortion == Off)
+        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
         {
-            // for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-            // {
-            //     channelData[sample] = buffer.getSample(channel, sample);
-            //     fMix = channelData[sample];
-            //     channelData[sample] = fMix;
-            // channelData[sample] *= outputGain;
-            // }
-            outputSignalL = inputSignalL;
-            outputSignalR = inputSignalR;
 
-            DBG("drive is: " << hardClipProcessor.getClippingGain());
-        }
+            float inputSample = buffer.getSample(channel, sample);
+            fDry = inputSample;
+            float fDistorted = inputSample;
 
-        if (typeOfDistortion == HardClipType)
-        {
-            for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+            if (typeOfDistortion == Off)
             {
-                channelData[sample] = buffer.getSample(channel, sample);
-                fDry = channelData[sample];
+                // for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+                // {
+                //     channelData[sample] = buffer.getSample(channel, sample);
+                //     fMix = channelData[sample];
+                //     channelData[sample] = fMix;
+                // channelData[sample] *= outputGain;
+                // }
+                outputSignalL = inputSignalL;
+                outputSignalR = inputSignalR;
 
-                fMix = channelData[sample] * hardClipProcessor.getClippingGain();
-                float fClipped = hardClipProcessor.hardClipping(fMix);
-
-                float fFiltered = (channel == 0) ? filterL.processSample(0, channelData[sample]) : filterR.processSample(1, channelData[sample]);
-                
-                fWet = fFiltered;
-                channelData[sample] = (fWet * wetAmount.load()) + (fDry * dryAmount.load());
+                DBG("drive is: " << hardClipProcessor.getClippingGain());
             }
-        }
 
-        else if (typeOfDistortion == SoftClipType)
-        {
-            for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-            {
-                channelData[sample] = buffer.getSample(channel, sample);
-                fDry = channelData[sample];
-                fMix = channelData[sample] * (hardClipProcessor.getClippingGain() * 0.17); //Reduce the range of scale from 1 - 30 to 1 - 5.1
-
-                float hardClipped = hardClipProcessor.hardClipping(fMix);
-
-                channelData[sample] = softClipProcessor.softClipping(hardClipped, softClipProcessor.getSoftCurve());
-               
-                float fFiltered = (channel == 0) ? filterL.processSample(0, channelData[sample]) : filterR.processSample(1, channelData[sample]);
-                fWet = fFiltered;
-                
-                channelData[sample] = (fWet * wetAmount.load()) + (fDry * dryAmount.load());
+            if (typeOfDistortion == HardClipType)
+            {                 
+                    fDistorted = fDistorted * hardClipProcessor.getClippingGain();
+                    fDistorted = hardClipProcessor.hardClipping(fDistorted);                
             }
-        }
 
-        else if (typeOfDistortion == QuarterCicleType)
-        {
-            for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-            {
-                channelData[sample] = buffer.getSample(channel, sample);
-                fDry = channelData[sample];
-                fMix = channelData[sample] * hardClipProcessor.getClippingGain() * 0.17; //Reduce the range of scale from 1 - 30 to 1 - 5.1
-
-                float hardClipped = hardClipProcessor.hardClipping(fMix);
-                hardClipped *= 0.4;
-
-                channelData[sample] = quarterCircleProcessor.quarterCircle(hardClipped);
-                float fFiltered = (channel == 0) ? filterL.processSample(0, channelData[sample]) : filterR.processSample(1, channelData[sample]);
-                fWet = fFiltered;
-                
-                channelData[sample] = (fWet * wetAmount.load()) + (fDry * dryAmount.load());
-                //   channelData[sample] *= outputGain.load();
-                  // channelData[sample] *= 0.1;
+            else if (typeOfDistortion == SoftClipType)
+            {                                   
+                    fDistorted = fDistorted * (hardClipProcessor.getClippingGain() * 0.17); //Reduce the range of scale from 1 - 30 to 1 - 5.1
+                    fDistorted = hardClipProcessor.hardClipping(fDistorted);
+                    fDistorted = softClipProcessor.softClipping(fDistorted, softClipProcessor.getSoftCurve());               
             }
-        }
 
-        else if (typeOfDistortion == AsymmetricType)
-        {
-            for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-            {
-                channelData[sample] = buffer.getSample(channel, sample);
-                fDry = channelData[sample];
-                fMix = channelData[sample] * hardClipProcessor.getClippingGain() * 0.17; //Reduce the range of scale from 1 - 30 to 1 - 5.1
-
-                float hardClipped = hardClipProcessor.hardClipping(fMix);
-                hardClipped *= 0.4;
-
-                channelData[sample] = asymmetricalProcessor.asymmetrical(hardClipped, asymmetricalProcessor.getAsymVariable());
-               
-                float fFiltered = (channel == 0) ? filterL.processSample(0, channelData[sample]) : filterR.processSample(1, channelData[sample]);
-                
-                fWet = fFiltered;
-                channelData[sample] = (fWet * wetAmount.load()) + (fDry * dryAmount.load());
-
-                //channelData[sample] *= outputGain.load();
-                //channelData[sample] *= 0.1;
+            else if (typeOfDistortion == QuarterCicleType)
+            {                                  
+                    fDistorted = fDistorted * hardClipProcessor.getClippingGain() * 0.17; //Reduce the range of scale from 1 - 30 to 1 - 5.1
+                    fDistorted = hardClipProcessor.hardClipping(fDistorted);
+                    fDistorted *= 0.4;
+                    fDistorted = quarterCircleProcessor.quarterCircle(fDistorted);               
             }
+
+            else if (typeOfDistortion == AsymmetricType)
+            {                                 
+                    fDistorted = fDistorted * hardClipProcessor.getClippingGain() * 0.17; //Reduce the range of scale from 1 - 30 to 1 - 5.1
+                    fDistorted = hardClipProcessor.hardClipping(fDistorted);
+                    fDistorted *= 0.4;
+                    fDistorted = asymmetricalProcessor.asymmetrical(fDistorted, asymmetricalProcessor.getAsymVariable());              
+            }
+
+            float fFiltered = (channel == 0) ? filterL.processSample(0, fDistorted) : filterR.processSample(1, fDistorted);
+            fWet = fFiltered;
+            channelData[sample] = fFiltered;//(fWet * wetAmount.load()) + (fDry * dryAmount.load()); //NO HAY DRY-WET AHORA MISMO
         }
     } 
     
@@ -394,22 +359,7 @@ void TypesofDistortionAudioProcessor::setDryWetAmount(int newAmount)
 }
 
 //==============================================================================
-void TypesofDistortionAudioProcessor::setFilterType(FilterType newFilterType)
-{
-    filterType = newFilterType;
 
-    if (filterType == LowPass)
-    {
-        filterL.setType(dsp::StateVariableTPTFilterType::lowpass);
-        filterR.setType(dsp::StateVariableTPTFilterType::lowpass);
-    }
-
-    else if (filterType == HighPass)
-    {
-        filterL.setType(dsp::StateVariableTPTFilterType::highpass);
-        filterR.setType(dsp::StateVariableTPTFilterType::highpass);
-    }
-}
    // switch (filterType)
    // {
    // case FilterType::LowPass:
