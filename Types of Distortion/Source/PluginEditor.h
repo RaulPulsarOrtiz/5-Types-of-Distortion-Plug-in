@@ -16,10 +16,13 @@
 #include "AsymmetricalGUI.h"
 #include "GUIposition.h"
 #include "dBMeter.h"
+#include "CustomSliders.h"
 
 //==============================================================================
 /**
 */
+
+
 class TypesofDistortionAudioProcessorEditor  : public juce::AudioProcessorEditor,
                                                public Slider::Listener,
                                                public ComboBox::Listener,
@@ -54,5 +57,7 @@ private:
 
     GUIposition guiPosition;
     VerticalMeter inputMeterL, inputMeterR, outputMeterL, outputMeterR;
+    
+    LookAndFeel22Steps twentyTwoStepsLookAndFeel;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TypesofDistortionAudioProcessorEditor)
 };

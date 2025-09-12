@@ -251,7 +251,7 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
                 outputSignalL = inputSignalL;
                 outputSignalR = inputSignalR;
 
-                DBG("drive is: " << hardClipProcessor.getClippingGain());
+                //DBG("drive is: " << hardClipProcessor.getClippingGain());
             }
 
             if (typeOfDistortion == HardClipType)

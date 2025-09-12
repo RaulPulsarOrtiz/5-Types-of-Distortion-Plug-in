@@ -16,6 +16,7 @@ SoftClipGUI::SoftClipGUI()
     softCurveSldr.setRange(10, 10000);
    // softCurveSldr.setValue(10);
     softCurveSldr.setTextBoxStyle(Slider::TextBoxAbove, true, 60, 15);
+    softCurveSldr.setLookAndFeel(&twentyTwoStepsLookAndFeel);
     softCurveSldr.addListener(this);
     addAndMakeVisible(softCurveSldr);
     softCurveSldr.setVisible(true);
@@ -25,6 +26,11 @@ SoftClipGUI::SoftClipGUI()
     addAndMakeVisible(softCurveText);
     softCurveText.setVisible(true);
    }
+
+SoftClipGUI::~SoftClipGUI()
+{
+    softCurveSldr.setLookAndFeel(nullptr);
+}
 
 void SoftClipGUI::sliderValueChanged(Slider* slider)
 {

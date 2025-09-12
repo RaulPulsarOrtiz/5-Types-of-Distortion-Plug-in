@@ -16,6 +16,7 @@ AsymmetricalGUI::AsymmetricalGUI()
     asymVariableSldr.setRange(0.f, 1.f);
     asymVariableSldr.setValue(1.f);
     asymVariableSldr.setTextBoxStyle(Slider::TextBoxAbove, true, 60, 15);
+    asymVariableSldr.setLookAndFeel(&twentyTwoStepsLookAndFeel);
     asymVariableSldr.addListener(this);
     addAndMakeVisible(asymVariableSldr);
     asymVariableSldr.setVisible(true);
@@ -24,6 +25,11 @@ AsymmetricalGUI::AsymmetricalGUI()
     asymVariableText.setColour(Label::ColourIds::outlineColourId, Colours::wheat);
     addAndMakeVisible(asymVariableText);
     asymVariableText.setVisible(false);
+}
+
+AsymmetricalGUI::~AsymmetricalGUI()
+{
+    asymVariableSldr.setLookAndFeel(nullptr);
 }
 
 void AsymmetricalGUI::sliderValueChanged(Slider* slider)

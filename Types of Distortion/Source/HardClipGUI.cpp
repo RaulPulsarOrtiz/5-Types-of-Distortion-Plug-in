@@ -18,7 +18,7 @@ HardClipGUI::HardClipGUI()
     clippingGainSldr.setValue(1.f);
     clippingGainSldr.setTextBoxStyle(Slider::TextBoxAbove, true, 40, 15);
     clippingGainSldr.setTextValueSuffix("dB");
-
+    clippingGainSldr.setLookAndFeel(&lookAndFeelDistortion);
     clippingGainSldr.addListener(this);
     addAndMakeVisible(clippingGainSldr);
 
@@ -29,6 +29,11 @@ HardClipGUI::HardClipGUI()
    
     clipGainValuesText.setText("1    -    10", dontSendNotification);
     addAndMakeVisible(clipGainValuesText);
+}
+
+HardClipGUI::~HardClipGUI()
+{
+    clippingGainSldr.setLookAndFeel(nullptr);
 }
 
 void HardClipGUI::sliderValueChanged(Slider* slider)
@@ -59,7 +64,7 @@ void HardClipGUI::resized()
     sliderWidth = 100;
     sliderHeight = 100;
 
-    auto area = getLocalBounds();
+    auto area = getLocalBounds();//.withSizeKeepingCentre(100, 100);
     clippingGainSldr.setBounds(area);
  }
 

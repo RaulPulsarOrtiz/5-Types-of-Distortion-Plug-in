@@ -12,13 +12,14 @@
 #include <JuceHeader.h>
 #include "HardClipProcessor.h"
 #include "GUIposition.h"
+#include "CustomSliders.h"
 
 class HardClipGUI : public Component,
                     public Slider::Listener
 {
 public:
     HardClipGUI();
-    ~HardClipGUI() {};
+    ~HardClipGUI();
     void sliderValueChanged(Slider* slider) override;
     void resized() override;
 
@@ -37,4 +38,5 @@ private:
 
     /*Object from a class which aim is place the different areas of the GUI to avoid repeat code*/
     GUIposition guiPosition;
+    LookAndFeelDistortion lookAndFeelDistortion;
 };

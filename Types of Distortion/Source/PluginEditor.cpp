@@ -9,6 +9,11 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+
+
+
+
+
 //==============================================================================
 TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(TypesofDistortionAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p), 
@@ -47,6 +52,7 @@ TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(Typ
     outputGainSldr.setValue(1.f);
     outputGainSldr.setTextBoxStyle(Slider::TextBoxAbove, true, 60, 15);
     //outputGainSldr.mouseDoubleClick(MouseEvent mouse);
+    outputGainSldr.setLookAndFeel(&twentyTwoStepsLookAndFeel);
     outputGainSldr.addListener(this);
     addAndMakeVisible(outputGainSldr);
 
@@ -57,6 +63,7 @@ TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(Typ
     cutoffSldr.setTextBoxStyle(Slider::TextBoxAbove, true, 60, 15);
     //cutoffSldr.mouseDoubleClick(MouseEvent mouse);
     cutoffSldr.setTextValueSuffix("Hz");
+    cutoffSldr.setLookAndFeel(&twentyTwoStepsLookAndFeel);
     cutoffSldr.addListener(this);
     addAndMakeVisible(cutoffSldr);
 
@@ -66,6 +73,7 @@ TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(Typ
     dryWetSldr.setTextBoxStyle(Slider::TextBoxAbove, true, 40, 15);
     //cutoffSldr.mouseDoubleClick(MouseEvent mouse);
     dryWetSldr.setTextValueSuffix("%");
+    dryWetSldr.setLookAndFeel(&twentyTwoStepsLookAndFeel);
     dryWetSldr.addListener(this);
     addAndMakeVisible(dryWetSldr);
 
@@ -96,6 +104,9 @@ TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(Typ
 
 TypesofDistortionAudioProcessorEditor::~TypesofDistortionAudioProcessorEditor()
 {
+    outputGainSldr.setLookAndFeel(nullptr); //This components are using a custom LookAndFeel class that is destroyed when the Editor is still calling that class. So they need to be set to a nullptr to don't throw an exception
+    dryWetSldr.setLookAndFeel(nullptr);
+    cutoffSldr.setLookAndFeel(nullptr);
 }
 
 //==============================================================================
@@ -165,8 +176,12 @@ void TypesofDistortionAudioProcessorEditor::resized()
    // auto middlePointX = innerArea.getCentreX();
    // auto middlePointY = innerArea.getCentreY();
 
-    auto hardClipGUIPos = guiPosition.getCentre();   
-    hardClipGUI.setBounds(hardClipGUIPos.x - hardClipGUI.sliderWidth / 2, hardClipGUIPos.y - (hardClipGUI.sliderHeight / 2), hardClipGUI.sliderWidth, hardClipGUI.sliderHeight);
+    auto hardClipGUIBounds = juce::Rectangle<int>(hardClipGUI.sliderWidth,
+        hardClipGUI.sliderHeight)
+        .withCentre(guiPosition.getCentre());
+
+    hardClipGUI.setBounds(hardClipGUIBounds);
+
 
    // hardClipGUI.setBounds(middlePointX, middlePointY, 200, 200);
   //  softClipGUI.setBounds(leftComponentArea.removeFromTop(150));

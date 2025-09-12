@@ -12,13 +12,14 @@
 #include <JuceHeader.h>
 #include "AsymmetricalProcessor.h"
 #include "GUIposition.h"
+#include "CustomSliders.h"
 
 class AsymmetricalGUI : public Component,
                         public Slider::Listener
 {
 public:
     AsymmetricalGUI();
-    ~AsymmetricalGUI() {};
+    ~AsymmetricalGUI();
 
     void sliderValueChanged(Slider* slider) override;
     void resized() override;
@@ -32,4 +33,5 @@ private:
     AsymmetricalProcessor* asymmetricProcessPtr { nullptr };
 
     GUIposition guiPosition;
+    LookAndFeel22Steps twentyTwoStepsLookAndFeel;
 };
