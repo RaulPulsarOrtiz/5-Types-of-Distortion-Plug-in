@@ -215,7 +215,7 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
     // interleaved by keeping the same state.
    
     inputSignalL = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
-    inputSignalR = buffer.getRMSLevel(1, 0, buffer.getNumSamples());
+    inputSignalR = buffer.getRMSLevel(1, 0, buffer.getNumSamples());   
     
     // --- Compute correction factor from *previous block's* RMS --- //In this way I can used the Auto-Gain in this block instead of having it apply on block after. If I add this at the end of the block, the distortion occurs without any AutoGain applied yet.
   
@@ -262,30 +262,30 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
 
             else if (typeOfDistortion == SoftClipType)
             {                                   
-                    fDistorted = fDistorted * (hardClipProcessor.getClippingGain() * 0.17); //Reduce the range of scale from 1 - 30 to 1 - 5.1
+                fDistorted = fDistorted * (hardClipProcessor.getClippingGain() * 0.25f); //* 0.17); //Reduce the range of scale from 1 - 30 to 1 - 5.1
                     fDistorted = hardClipProcessor.hardClipping(fDistorted);
                     fDistorted = softClipProcessor.softClipping(fDistorted, softClipProcessor.getSoftCurve());               
             }
 
             else if (typeOfDistortion == QuarterCicleType)
             {                                  
-                    fDistorted = fDistorted * hardClipProcessor.getClippingGain() * 0.17; //Reduce the range of scale from 1 - 30 to 1 - 5.1
+                    fDistorted = fDistorted * hardClipProcessor.getClippingGain() * 0.17f; //Reduce the range of scale from 1 - 30 to 1 - 5.1
                     fDistorted = hardClipProcessor.hardClipping(fDistorted);
-                    fDistorted *= 0.4;
+                    fDistorted *= 0.3f; // * 0.4
                     fDistorted = quarterCircleProcessor.quarterCircle(fDistorted);               
             }
 
             else if (typeOfDistortion == AsymmetricType)
             {                                 
-                    fDistorted = fDistorted * hardClipProcessor.getClippingGain() * 0.17; //Reduce the range of scale from 1 - 30 to 1 - 5.1
+                    fDistorted = fDistorted * hardClipProcessor.getClippingGain() * 0.17f; //Reduce the range of scale from 1 - 30 to 1 - 5.1
                     fDistorted = hardClipProcessor.hardClipping(fDistorted);
-                    fDistorted *= 0.4;
+                    fDistorted *= 0.3f;
                     fDistorted = asymmetricalProcessor.asymmetrical(fDistorted, asymmetricalProcessor.getAsymVariable());              
             }
 
-            float fFiltered = (channel == 0) ? filterL.processSample(0, fDistorted) : filterR.processSample(1, fDistorted);
-            fWet = fFiltered;
-            channelData[sample] = fFiltered;//(fWet * wetAmount.load()) + (fDry * dryAmount.load()); //NO HAY DRY-WET AHORA MISMO
+           // float fFiltered = (channel == 0) ? filterL.processSample(0, fDistorted) : filterR.processSample(1, fDistorted);
+          //  fWet = fFiltered;
+            channelData[sample] = fDistorted;//(fWet * wetAmount.load()) + (fDry * dryAmount.load()); //NO HAY DRY-WET AHORA MISMO
         }
     } 
     

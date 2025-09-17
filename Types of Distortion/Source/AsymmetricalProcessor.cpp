@@ -24,6 +24,7 @@ float AsymmetricalProcessor::asymmetrical(float input, float c)
     {
         output = input + (pow(input * -1, a) / a);
     }
+   
     return output;
 }
 

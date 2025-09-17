@@ -59,5 +59,8 @@ private:
     VerticalMeter inputMeterL, inputMeterR, outputMeterL, outputMeterR;
     
     LookAndFeel22Steps twentyTwoStepsLookAndFeel;
+    MenuLookAndFeel menuLookAndFeel;
+    InvertedMenuLookAndFeel invertedMenuLookAndFeel;
+    Image wavesBackground;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TypesofDistortionAudioProcessorEditor)
 };

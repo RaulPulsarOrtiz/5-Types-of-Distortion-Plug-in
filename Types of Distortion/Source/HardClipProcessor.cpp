@@ -13,18 +13,19 @@
 float HardClipProcessor::hardClipping(float input)
 {
     float output = 0;
-    if (input > 1)
+    if (input > 0.7f)
     {
-        return 1.f;
+        output = 7.f;
     }
-    else if (input < -1)
+    else if (input < -0.7f)
     {
-        return -1.f;
+        output = -0.7f;
     }
     else
     {
-        return input;
+        output = input;
     }
+    return output;
 }
 
 void HardClipProcessor::setClippingGain(int newClippingGain)

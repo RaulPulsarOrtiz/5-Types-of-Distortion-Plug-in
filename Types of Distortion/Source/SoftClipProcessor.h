@@ -21,7 +21,7 @@ public:
 
     /** Declaration of the process for an HardClipping Distortion.*/
     float softClipping(float input, int a); 
-   
+
     /**Sets the value to the softCurve variable. This value comes from Editor Slider */
     void setSoftCurve(int newSoftCurve); // Set the SoftClip distortion curve value wanted
 

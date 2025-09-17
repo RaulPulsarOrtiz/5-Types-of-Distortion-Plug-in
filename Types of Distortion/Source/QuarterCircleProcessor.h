@@ -17,7 +17,7 @@ public:
     ~QuarterCircleProcessor() {};
 
     float quarterCircle(float input);
-
 private:
+
 };
     

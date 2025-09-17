@@ -29,4 +29,5 @@ public:
 
 private:
     std::atomic<float> asymVariableValue = 1.f;
+
 };

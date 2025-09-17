@@ -22,5 +22,6 @@ float QuarterCircleProcessor::quarterCircle(float input)
     {
         output = (sqrt((1 - pow((input + 1), 2)))) * -1;
     }
+
     return output;
 }

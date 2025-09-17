@@ -38,6 +38,11 @@ TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(Typ
     distortionTypeMenu.addItem("Quarter Circle", 4);
     distortionTypeMenu.addItem("Asymmetrical", 5);
     distortionTypeMenu.setText("Distortion Type", dontSendNotification);
+    distortionTypeMenu.setColour(juce::ComboBox::backgroundColourId, juce::Colours::black);
+    distortionTypeMenu.setColour(juce::ComboBox::outlineColourId, juce::Colours::white);
+    distortionTypeMenu.setColour(juce::ComboBox::arrowColourId, juce::Colours::red);
+    distortionTypeMenu.setColour(juce::ComboBox::textColourId, juce::Colours::yellow);
+    distortionTypeMenu.setLookAndFeel(&menuLookAndFeel);
     distortionTypeMenu.addListener(this);
     addAndMakeVisible(distortionTypeMenu);
    
@@ -85,6 +90,7 @@ TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(Typ
     filterTypeMenu.addItem("HPF", 2);
     filterTypeMenu.setSelectedId(1, juce::dontSendNotification);
     filterTypeMenu.setText("Filter Type:", dontSendNotification);
+    filterTypeMenu.setLookAndFeel(&invertedMenuLookAndFeel);
     filterTypeMenu.addListener(this);
     addAndMakeVisible(filterTypeMenu);
 
@@ -107,6 +113,8 @@ TypesofDistortionAudioProcessorEditor::~TypesofDistortionAudioProcessorEditor()
     outputGainSldr.setLookAndFeel(nullptr); //This components are using a custom LookAndFeel class that is destroyed when the Editor is still calling that class. So they need to be set to a nullptr to don't throw an exception
     dryWetSldr.setLookAndFeel(nullptr);
     cutoffSldr.setLookAndFeel(nullptr);
+    distortionTypeMenu.setLookAndFeel(nullptr);
+    filterTypeMenu.setLookAndFeel(nullptr);
 }
 
 //==============================================================================
@@ -132,7 +140,11 @@ void TypesofDistortionAudioProcessorEditor::paint(juce::Graphics& g)
     //g.setColour(juce::Colours::aliceblue);
     //g.drawRect(leftComponentArea);
     //g.drawRect(rightComponentArea);
+    wavesBackground = ImageCache::getFromMemory(BinaryData::_30_jpg, BinaryData::_30_jpgSize);
+    g.drawImageWithin(wavesBackground, 0, 0, getWidth(), getHeight(), RectanglePlacement::stretchToFit);
 
+    //juce::AffineTransform transform = juce::AffineTransform::scale(1.f).translated(-70, -30); // Scale 110%
+    //g.drawImageTransformed(wavesBackground, transform);
 
 }
 
