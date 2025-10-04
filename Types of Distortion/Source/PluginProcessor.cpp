@@ -216,43 +216,96 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
    
     inputSignalL = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
     inputSignalR = buffer.getRMSLevel(1, 0, buffer.getNumSamples());   
-    
-    // --- Compute correction factor from *previous block's* RMS --- //In this way I can used the Auto-Gain in this block instead of having it apply on block after. If I add this at the end of the block, the distortion occurs without any AutoGain applied yet.
+   
+    // --- OFF MODE (true bypass) --- //
+    if (typeOfDistortion == Off)
+    {
+        // nothing to do, buffer already contains the dry input
+        return;
+    }
   
-    if (prevDistortedRMSOutputL > 0.0f)
-        correctionL = inputSignalL / prevDistortedRMSOutputL;
-        autoGainL.setTargetValue(correctionL);
-    if (numChannels > 1 && prevDistortedRMSOutputR > 0.0f)
-        correctionR = inputSignalR / prevDistortedRMSOutputR;
-        autoGainR.setTargetValue(correctionR);
-      
+    //Auto-Gain option B. Don't have burst but the drive changes the ouput level a lot.
+    /// --- Compute correction factor from previous block's RMS --- // //In this way I can used the Auto-Gain in this block instead of having it apply on block after. 
+                                                                   //If I add this at the end of the block, the distortion occurs without any AutoGain applied yet.
+                                                                   //If input RMS or distorted RMS is too small (silence, noise floor, zero), skip updating correction.
+                                                                   //This avoids dividing by numbers close to 0.0f.
+ //   constexpr float minRMS = 1.0e-6f; //  gate floor (-120 dB)
+ //  
+ //   // --- Left channel ---
+ //   if (prevDistortedRMSOutputL > minRMS)
+ //   {
+ //       // Avoid divide-by-zero by adding epsilon
+ //       float rawCorrectionL = inputSignalL / (prevDistortedRMSOutputL + 1.0e-9f);
+ //   
+ //       // Instead of hard-clamp 0.5–2.0, use softer limiter
+ //       float limitedCorrectionL = juce::jlimit(0.25f, 4.0f, rawCorrectionL);
+ //   
+ //       // Smoothly chase the target (prevents jumps)
+ //       autoGainL.setTargetValue(limitedCorrectionL);
+ //   }
+ //   
+ //   // --- Right channel ---
+ //   if (totalNumInputChannels > 1 && prevDistortedRMSOutputR > minRMS)
+ //   {
+ //       float rawCorrectionR = inputSignalR / (prevDistortedRMSOutputR + 1.0e-9f);
+ //       float limitedCorrectionR = juce::jlimit(0.25f, 4.0f, rawCorrectionR);
+ //       autoGainR.setTargetValue(limitedCorrectionR);
+ //   }
+
+    //Auto-Gain option A. Increasing Drive keeps the overall output level constant. But has some burst of audio
+//  if (prevDistortedRMSOutputL > 0.0f) correctionL = inputSignalL / prevDistortedRMSOutputL; 
+//  autoGainL.setTargetValue(correctionL); 
+//  if (numChannels > 1 && prevDistortedRMSOutputR > 0.0f) correctionR = inputSignalR / prevDistortedRMSOutputR; 
+//  autoGainR.setTargetValue(correctionR);
+
+    //Auto-Gain option C:
+    // --- Parameters ---
+    constexpr float minRMS = 1.0e-4f;       // floor to avoid dividing by near-zero signals
+    constexpr float maxGainChange = 2.0f;   // maximum allowed gain factor
+
+    // --- Left channel ---
+    if (prevDistortedRMSOutputL > minRMS)
+    {
+        // Compute raw correction factor
+        float rawCorrectionL = inputSignalL / prevDistortedRMSOutputL;
+
+        // Limit abrupt jumps
+        float limitedCorrectionL = juce::jlimit(0.0f, maxGainChange, rawCorrectionL);
+
+        // Apply the smoothed target
+        autoGainL.setTargetValue(limitedCorrectionL);
+    }
+    else
+    {
+        // Signal too quiet — do nothing (gain = 1)
+        autoGainL.setTargetValue(1.0f);
+    }
+
+    // --- Right channel ---
+    if (numChannels > 1)
+    {
+        if (prevDistortedRMSOutputR > minRMS)
+        {
+            float rawCorrectionR = inputSignalR / prevDistortedRMSOutputR;
+            float limitedCorrectionR = juce::jlimit(0.0f, maxGainChange, rawCorrectionR);
+            autoGainR.setTargetValue(limitedCorrectionR);
+        }
+        else
+        {
+            autoGainR.setTargetValue(1.0f);
+        }
+    }
 
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer(channel);
 
-        // ..do something to the data...
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
         {
 
             float inputSample = buffer.getSample(channel, sample);
             fDry = inputSample;
             float fDistorted = inputSample;
-
-            if (typeOfDistortion == Off)
-            {
-                // for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-                // {
-                //     channelData[sample] = buffer.getSample(channel, sample);
-                //     fMix = channelData[sample];
-                //     channelData[sample] = fMix;
-                // channelData[sample] *= outputGain;
-                // }
-                outputSignalL = inputSignalL;
-                outputSignalR = inputSignalR;
-
-                //DBG("drive is: " << hardClipProcessor.getClippingGain());
-            }
 
             if (typeOfDistortion == HardClipType)
             {                 
@@ -279,7 +332,7 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
             {                                 
                     fDistorted = fDistorted * hardClipProcessor.getClippingGain() * 0.17f; //Reduce the range of scale from 1 - 30 to 1 - 5.1
                     fDistorted = hardClipProcessor.hardClipping(fDistorted);
-                    fDistorted *= 0.3f;
+                    fDistorted *= 0.3f; //0.3
                     fDistorted = asymmetricalProcessor.asymmetrical(fDistorted, asymmetricalProcessor.getAsymVariable());              
             }
 

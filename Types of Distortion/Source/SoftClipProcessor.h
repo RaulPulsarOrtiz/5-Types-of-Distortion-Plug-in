@@ -31,5 +31,5 @@ public:
 
 private:
     //std::atomic<int> softClippingGain = 1;
-    std::atomic<int> softCurveValue = 10;
+    std::atomic<double> softCurveValue = 0.1;
 };

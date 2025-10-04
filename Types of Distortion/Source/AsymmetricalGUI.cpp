@@ -13,7 +13,7 @@
 AsymmetricalGUI::AsymmetricalGUI()
 {
     asymVariableSldr.setSliderStyle(Slider::Rotary);
-    asymVariableSldr.setRange(0.f, 1.f);
+    asymVariableSldr.setRange(0.5f, 1.5f, 0.1f);
     asymVariableSldr.setValue(1.f);
     asymVariableSldr.setTextBoxStyle(Slider::TextBoxAbove, true, 60, 15);
     asymVariableSldr.setLookAndFeel(&twentyTwoStepsLookAndFeel);

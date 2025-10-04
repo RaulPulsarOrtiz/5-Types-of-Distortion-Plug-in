@@ -13,6 +13,10 @@
 
 float AsymmetricalProcessor::asymmetrical(float input, float c)
 {
+    float epsilon = 1e-6f;
+    if (fabs(input) < epsilon)
+        return input;  // bypass tiny values to avoid noise
+
     float a = 1 / (c + 1);
     float output = 0;
 
@@ -24,7 +28,10 @@ float AsymmetricalProcessor::asymmetrical(float input, float c)
     {
         output = input + (pow(input * -1, a) / a);
     }
-   
+    // Add a minimum factor so very small negative inputs don’t cancel
+    if (c == 0.0f && input < 0.0f)
+        output = input * 0.2f;  // small but nonzero output
+
     return output;
 }
 

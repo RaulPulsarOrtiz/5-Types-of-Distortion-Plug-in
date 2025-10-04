@@ -15,7 +15,7 @@ float HardClipProcessor::hardClipping(float input)
     float output = 0;
     if (input > 0.7f)
     {
-        output = 7.f;
+        output = 0.7f;
     }
     else if (input < -0.7f)
     {

@@ -16,11 +16,15 @@ float QuarterCircleProcessor::quarterCircle(float input)
     float output = 0;
     if (input > 0)
     {
-        output = sqrt(1 - pow((input - 1), 2));
+        float val = 1 - pow((input - 1), 2);
+        if (val < 0) val = 0;          // prevent NaN from floating-point rounding
+        output = sqrt(val);
     }
     else
     {
-        output = (sqrt((1 - pow((input + 1), 2)))) * -1;
+        float val = 1 - pow((input + 1), 2);
+        if (val < 0) val = 0;          // prevent NaN
+        output = -sqrt(val);
     }
 
     return output;

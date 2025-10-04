@@ -13,7 +13,7 @@
 SoftClipGUI::SoftClipGUI()
 {
     softCurveSldr.setSliderStyle(Slider::Rotary);
-    softCurveSldr.setRange(10, 10000);
+    softCurveSldr.setRange(0.1, 10, 0.1);
    // softCurveSldr.setValue(10);
     softCurveSldr.setTextBoxStyle(Slider::TextBoxAbove, true, 60, 15);
     softCurveSldr.setLookAndFeel(&twentyTwoStepsLookAndFeel);
