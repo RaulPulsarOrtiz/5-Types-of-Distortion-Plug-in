@@ -94,35 +94,39 @@ public:
     /**  Function to set a new type of Distortion to the typeOfDistortion variable from the enum TypeOfDistortion*/
     void setDistortionType(TypeOfDistortion newType);
 
-    /** enum with two types of filters*/
-    //enum FilterType
-    //{
-    //    LowPass,
-    //    HighPass
-    //};
-
-    /**  this variable can be set on 2 different types of Filters. It's set on the Editor comboBox*/
-  //  FilterType filterType;
-
     /**Function to set a new type of Filter to the filterType variable from the enum FilterType*/
     void setFilterType (juce::dsp::StateVariableTPTFilterType newType);
    
+    /** This function returns the Input Signal and turn it from gain to decibels. 
+    * This value is used by the @ref PluginEditor to initialise the
+    * @ref VerticalMeter objects for PluginEditor::inputMeterL and PluginEditor::inputMeterR, allowing the meter to display live levels in the Editor from the processor.*/
     float getInputSignal(int channel);
+    /** This function returns the Output Signal which is already in decibels.
+    * This value is used by the @ref PluginEditor to initialise the
+    * @ref VerticalMeter objects for PluginEditor::outputMeterL and PluginEditor::onputMeterR, allowing the meter to display live levels in the Editor from the processor.*/
     float getOutputSignal(int channel);
 
 private:
 
+    /** Increasing Drive can increase the overall signal output. This variable stores the Output Gain that can be used to bring down the signal to the same level as was in the input, or adjust it in other ways */
     std::atomic<float> outputGain = 1.f;
-    std::atomic<int> wetAmount = 1;
-    std::atomic<int> dryAmount = 0;
+    /** Selects how much distorted signal we want in a range from 0 to 1. Altough the slider is expressed from 0 to 100 */
+    std::atomic<float> wetAmount = 1.f;
+    /** Selects how much dry signal we want in a range from 0 to 1. Altough the slider is expressed from 0 to 100 */
+    std::atomic<float> dryAmount = 0.f;
+    /** Stores the input signal without distortion */
     float fDry = 0.f;
+    /** Stores the distorted signal */
     float fWet = 0.f;
-
-
+    /** Stores the Filter's Frequency Cutoff*/
     std::atomic<int> freqCutoff = 20000;
+    /** This function resets the filter state and the smoothValue used for the Auto-Gain feature. It is called at the end of prepareToPlay() */
     void reset() override;
+    /** Declaration of the Filter. One for each leg of the stereo. */
     dsp::StateVariableTPTFilter<float> filterL, filterR;
-
+    /** Stores the input and output signal levels in dB to be displayed on the @ref PluginEditor::inputMeterL, 
+     * @ref PluginEditor::inputMeterR, @ref PluginEditor::outputMeterL, 
+     * and @ref PluginEditor::outputMeterR*/
     float inputSignalL{ -60.f }, inputSignalR{ -60.f }, outputSignalL{ -60.f }, outputSignalR{ -60.f };
 
     juce::SmoothedValue<float> autoGainL{ 1.0f };

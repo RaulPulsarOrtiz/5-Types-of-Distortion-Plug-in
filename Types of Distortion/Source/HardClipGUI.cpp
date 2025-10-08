@@ -21,14 +21,6 @@ HardClipGUI::HardClipGUI()
     clippingGainSldr.setLookAndFeel(&lookAndFeelDistortion);
     clippingGainSldr.addListener(this);
     addAndMakeVisible(clippingGainSldr);
-
-    clipGainText.setText("Clipping Gain", dontSendNotification);
-   // clipGainText.setJustificationType(juce::Justification::centredTop);
-    clipGainText.setColour(Label::ColourIds::outlineColourId, Colours::wheat);
-    addAndMakeVisible(clipGainText);
-   
-    clipGainValuesText.setText("1    -    10", dontSendNotification);
-    addAndMakeVisible(clipGainValuesText);
 }
 
 HardClipGUI::~HardClipGUI()
@@ -48,19 +40,6 @@ void HardClipGUI::sliderValueChanged(Slider* slider)
 
 void HardClipGUI::resized()
 {
-   // auto area = guiPosition.getWorkingArea();
-   // auto knobsArea = guiPosition.getKnobsArea();
-   //
-   // clippingGainSldr.setBounds(knobsArea.removeFromLeft(150));
-   // clippingGainSldr.setSize(100, 100);
-   //
-   // Rectangle <int> clipGainSldrPos = clippingGainSldr.getBounds();
-   // int posX = clipGainSldrPos.getCentreX();
-   // int posY = clipGainSldrPos.getCentreY();
-   //
-   // clipGainText.setBounds((posX - 50), (posY + 50), 100, 15);
-   // clipGainValuesText.setBounds((posX - 32), (posY + 70), 100, 15);
-
     sliderWidth = 100;
     sliderHeight = 100;
 

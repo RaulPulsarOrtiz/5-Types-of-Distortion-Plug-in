@@ -53,7 +53,7 @@ private:
     AsymmetricalGUI asymmetricalGUI;
 
     Slider outputGainSldr, cutoffSldr, dryWetSldr;
-    Label outputGainText, cutoffText, dryWetText;
+    Label outputGainText, cutoffText, dryWetText, driveText, curveSoftClipText, curveAsymmetricText;
 
     GUIposition guiPosition;
     VerticalMeter inputMeterL, inputMeterR, outputMeterL, outputMeterR;

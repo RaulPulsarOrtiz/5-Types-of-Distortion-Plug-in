@@ -336,9 +336,9 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
                     fDistorted = asymmetricalProcessor.asymmetrical(fDistorted, asymmetricalProcessor.getAsymVariable());              
             }
 
-           // float fFiltered = (channel == 0) ? filterL.processSample(0, fDistorted) : filterR.processSample(1, fDistorted);
-          //  fWet = fFiltered;
-            channelData[sample] = fDistorted;//(fWet * wetAmount.load()) + (fDry * dryAmount.load()); //NO HAY DRY-WET AHORA MISMO
+            float fFiltered = (channel == 0) ? filterL.processSample(0, fDistorted) : filterR.processSample(1, fDistorted);
+            fWet = fFiltered;
+            channelData[sample] = (fFiltered * wetAmount.load()) + (fDry * dryAmount.load()); //NO HAY DRY-WET AHORA MISMO
         }
     } 
     
@@ -407,8 +407,10 @@ void TypesofDistortionAudioProcessor::setFilterFreqCutoff(int newFreq)
 
 void TypesofDistortionAudioProcessor::setDryWetAmount(int newAmount)
 {
-    wetAmount = newAmount;
-    dryAmount = 1 - newAmount;
+   int wetAmount100 = newAmount;
+   int dryAmount100 = 100 - newAmount; //In this way the slider range are 0 - 100. But the real wet-dry range is 0 to 1 to easily multiplied for the fDistorted signal (wet) and the input signal (dry)
+   wetAmount = (float) wetAmount100 / 100;
+   dryAmount = (float) dryAmount100 / 100;
 }
 
 //==============================================================================

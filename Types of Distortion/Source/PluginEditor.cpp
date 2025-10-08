@@ -47,9 +47,11 @@ TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(Typ
     addAndMakeVisible(distortionTypeMenu);
    
     addAndMakeVisible(hardClipGUI);
+    hardClipGUI.setAlwaysOnTop(true);
     addAndMakeVisible(softClipGUI);
-    softClipGUI.isAlwaysOnTop();
+    softClipGUI.setAlwaysOnTop(true);
     //QuarterCicle
+    asymmetricalGUI.setAlwaysOnTop(true);
     addAndMakeVisible(asymmetricalGUI);
 
     outputGainSldr.setSliderStyle(Slider::Rotary);
@@ -58,19 +60,29 @@ TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(Typ
     outputGainSldr.setTextBoxStyle(Slider::TextBoxAbove, true, 60, 15);
     //outputGainSldr.mouseDoubleClick(MouseEvent mouse);
     outputGainSldr.setLookAndFeel(&twentyTwoStepsLookAndFeel);
+    outputGainSldr.setAlwaysOnTop(true);
     outputGainSldr.addListener(this);
     addAndMakeVisible(outputGainSldr);
 
+    outputGainText.setText("Output Gain", dontSendNotification);
+    //  outputGainText.setColour(Label::ColourIds::outlineColourId, Colours::wheat);
+    addAndMakeVisible(outputGainText);
     
     cutoffSldr.setSliderStyle(Slider::Rotary);
     cutoffSldr.setRange(20, 20000, 1);
     cutoffSldr.setValue(20000);
-    cutoffSldr.setTextBoxStyle(Slider::TextBoxAbove, true, 60, 15);
+    //cutoffSldr.setSkewFactorFromMidPoint(1000.0);
+    cutoffSldr.setTextBoxStyle(Slider::TextBoxBelow, true, 60, 15);
     //cutoffSldr.mouseDoubleClick(MouseEvent mouse);
     cutoffSldr.setTextValueSuffix("Hz");
     cutoffSldr.setLookAndFeel(&twentyTwoStepsLookAndFeel);
+    cutoffSldr.setAlwaysOnTop(true);
     cutoffSldr.addListener(this);
     addAndMakeVisible(cutoffSldr);
+
+    cutoffText.setText("Cutoff Freq", dontSendNotification);
+    //  cutoffText.setColour(Label::ColourIds::outlineColourId, Colours::wheat);
+    addAndMakeVisible(cutoffText);
 
     dryWetSldr.setSliderStyle(Slider::Rotary);
     dryWetSldr.setRange(0, 100, 1);
@@ -79,12 +91,13 @@ TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(Typ
     //cutoffSldr.mouseDoubleClick(MouseEvent mouse);
     dryWetSldr.setTextValueSuffix("%");
     dryWetSldr.setLookAndFeel(&twentyTwoStepsLookAndFeel);
+    dryWetSldr.setAlwaysOnTop(true);
     dryWetSldr.addListener(this);
     addAndMakeVisible(dryWetSldr);
 
-    outputGainText.setText("Output Gain", dontSendNotification);
-    outputGainText.setColour(Label::ColourIds::outlineColourId, Colours::wheat);
-    addAndMakeVisible(outputGainText);
+    dryWetText.setText("Dry/Wet", dontSendNotification);
+    //dryWetText.setColour(Label::ColourIds::outlineColourId, Colours::wheat);
+    addAndMakeVisible(dryWetText);
     
     filterTypeMenu.addItem("LPF", 1);
     filterTypeMenu.addItem("HPF", 2);
@@ -92,20 +105,25 @@ TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(Typ
     filterTypeMenu.setText("Filter Type:", dontSendNotification);
     filterTypeMenu.setLookAndFeel(&invertedMenuLookAndFeel);
     filterTypeMenu.addListener(this);
-    addAndMakeVisible(filterTypeMenu);
+    addAndMakeVisible(filterTypeMenu); 
 
-    cutoffText.setText("Cutoff Freq", dontSendNotification);
-    cutoffText.setColour(Label::ColourIds::outlineColourId, Colours::wheat);
-    addAndMakeVisible(cutoffText);
-
-    dryWetText.setText("Dry/Wet", dontSendNotification);
-    dryWetText.setColour(Label::ColourIds::outlineColourId, Colours::wheat);
-    addAndMakeVisible(dryWetText);
-  
     addAndMakeVisible(inputMeterL);
     addAndMakeVisible(inputMeterR);
     addAndMakeVisible(outputMeterL);
     addAndMakeVisible(outputMeterR);
+
+    //The next text are labeling a slider that is living inside their own GUI class
+    driveText.setText("DRIVE", dontSendNotification);
+    driveText.setColour(Label::ColourIds::textColourId, Colours::palevioletred);
+    addAndMakeVisible(driveText);
+
+    curveSoftClipText.setText("Curve Intensity", dontSendNotification);
+    curveSoftClipText.setMinimumHorizontalScale(0.6);
+    addAndMakeVisible(curveSoftClipText);
+
+    curveAsymmetricText.setText("Curve Intensity", dontSendNotification);
+    curveAsymmetricText.setMinimumHorizontalScale(0.6);
+    addAndMakeVisible(curveAsymmetricText);
 }
 
 TypesofDistortionAudioProcessorEditor::~TypesofDistortionAudioProcessorEditor()
@@ -123,133 +141,75 @@ void TypesofDistortionAudioProcessorEditor::paint(juce::Graphics& g)
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 
-    //auto totalArea = getLocalBounds();
-    //auto innerArea = totalArea.reduced(50);
-    //auto halfLeftArea = innerArea.withWidth(innerArea.getWidth() / 2);
-    //auto leftQuarterArea = innerArea.withWidth(innerArea.getWidth() / 4);
-    //auto rightQuarterArea = innerArea.removeFromRight(innerArea.getWidth() / 4);
-    //auto inputMeterArea = leftQuarterArea.withWidth(leftQuarterArea.getWidth() - 50);
-    //auto outputMeterArea = rightQuarterArea.withWidth(rightQuarterArea.getWidth() - 50).withX(rightQuarterArea.getX() + 50);
-    //auto leftComponentArea = halfLeftArea.removeFromRight(leftQuarterArea.getWidth());
-    //auto rightComponentArea = innerArea.removeFromRight(rightQuarterArea.getWidth());
-    //
-    //g.setColour(juce::Colours::yellow);
-    //g.drawRect(inputMeterArea);
-    //g.drawRect(outputMeterArea);
-    //
-    //g.setColour(juce::Colours::aliceblue);
-    //g.drawRect(leftComponentArea);
-    //g.drawRect(rightComponentArea);
     wavesBackground = ImageCache::getFromMemory(BinaryData::_30_jpg, BinaryData::_30_jpgSize);
     g.drawImageWithin(wavesBackground, 0, 0, getWidth(), getHeight(), RectanglePlacement::stretchToFit);
-
-    //juce::AffineTransform transform = juce::AffineTransform::scale(1.f).translated(-70, -30); // Scale 110%
-    //g.drawImageTransformed(wavesBackground, transform);
-
 }
 
 void TypesofDistortionAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
-  //  auto area = getWorkingArea();
-  //  auto knobsArea = getKnobsArea();
-  //  auto analyserArea = getAnalyserArea();
-  //  auto menuArea = analyserArea.removeFromLeft(130);
-  //  menuArea = menuArea.removeFromTop(40);
-
-
     auto area = getLocalBounds();
 
     guiPosition.setBounds(area);
 
     distortionTypeMenu.setBounds(guiPosition.getInnerArea().withSizeKeepingCentre(200, 30).withY(30));
 
+    //Left Component is the half left area except the input meter
     auto leftComponentPos = guiPosition.getLeftComponentArea();
-   // leftComponentPos.removeFromRight(100);
     auto softClipPos = leftComponentPos.removeFromTop(200);
     softClipPos.removeFromRight(100);
     softClipGUI.setBounds(softClipPos); //Delete the with once I can move it with the mouse
-    //softClipGUI.setBounds(80, 100, 200, 150);
-    asymmetricalGUI.setBounds(leftComponentPos.removeFromLeft(100));
-    //juce::Rectangle<int> getInputMeterArea();
-    //juce::Rectangle<int> getOuputMeterArea();
-    //juce::Rectangle<int> getLeftComponentArea();
-    //juce::Rectangle<int> getRightComponentArea();
-   // auto totalArea = getLocalBounds();
-   // auto innerArea = totalArea.reduced(50);
-   // auto halfLeftArea = innerArea.withWidth(innerArea.getWidth() / 2);
-   // auto leftQuarterArea = innerArea.withWidth(innerArea.getWidth() / 4);
-   // auto rightQuarterArea = innerArea.removeFromRight(innerArea.getWidth() / 4);
-   // auto inputMeterArea = leftQuarterArea.withWidth(leftQuarterArea.getWidth() - 50);
-   // auto outputMeterArea = rightQuarterArea.withWidth(rightQuarterArea.getWidth() - 50).withX(rightQuarterArea.getX() + 50);
-   // auto leftComponentArea = halfLeftArea.removeFromRight(leftQuarterArea.getWidth());
-   // auto rightComponentArea = innerArea.removeFromRight(rightQuarterArea.getWidth());
-   // auto middlePointX = innerArea.getCentreX();
-   // auto middlePointY = innerArea.getCentreY();
+    
+    juce::Rectangle<int> curveSoftClipTextPos = softClipPos.translated(0, 17);
+    curveSoftClipText.setBounds(curveSoftClipTextPos);
 
+    juce::Rectangle<int> curveAsymmetricTextPos = softClipPos.translated(13, 205);
+    curveAsymmetricText.setBounds(curveAsymmetricTextPos);
+
+    asymmetricalGUI.setBounds(leftComponentPos.removeFromLeft(100));
+ 
+    //This is the central area where the Drive is going to be set
     auto hardClipGUIBounds = juce::Rectangle<int>(hardClipGUI.sliderWidth,
         hardClipGUI.sliderHeight)
         .withCentre(guiPosition.getCentre());
 
     hardClipGUI.setBounds(hardClipGUIBounds);
+    juce::Rectangle<int> driveTextPos = hardClipGUIBounds.translated(50, 96);
+    driveText.setBounds(driveTextPos);
 
-
-   // hardClipGUI.setBounds(middlePointX, middlePointY, 200, 200);
-  //  softClipGUI.setBounds(leftComponentArea.removeFromTop(150));
-    
-   // auto softClipGUIPos = leftComponentArea.removeFromTop(150);
-   // softClipGUI.setBounds(softClipGUIPos);
-
-   //
+    //Right Component is the half right area except the output meter
     auto outputGainSldrPos = guiPosition.getRightComponentArea();
     outputGainSldrPos = outputGainSldrPos.removeFromBottom(100);
     outputGainSldrPos = outputGainSldrPos.translated(40, 0);
     outputGainSldr.setBounds(outputGainSldrPos);
+
+    juce::Rectangle<int> outputGainTextPos = outputGainSldrPos.translated(0, 62);
+    outputGainText.setBounds(outputGainTextPos);
+
     auto dryWetSldrPos = outputGainSldrPos.translated(-100, 0);
     dryWetSldr.setBounds(dryWetSldrPos);
+
+    juce::Rectangle<int> dryWetTextPos = dryWetSldrPos.translated(12, 62);
+    dryWetText.setBounds(dryWetTextPos);
+
 
     auto cutoffSldrPos = guiPosition.getRightComponentArea();
     cutoffSldrPos = cutoffSldrPos.removeFromTop(120);
     cutoffSldrPos = cutoffSldrPos.translated(40, 0);
     cutoffSldr.setBounds(cutoffSldrPos);
 
+    juce::Rectangle<int> cutoffTextPos = cutoffSldrPos.translated(0, -65);
+    cutoffText.setBounds(cutoffTextPos);
+
     auto filterTypeMenuPos = guiPosition.getRightComponentArea();
     filterTypeMenuPos = filterTypeMenuPos.removeFromTop(50);
     filterTypeMenuPos = filterTypeMenuPos.translated(-60, 20);
     filterTypeMenu.setBounds(filterTypeMenuPos);
-   //
-   // outputGainSldr.setSize(100, 100);
-   //
-   // Rectangle <int> outputSldrPos = outputGainSldr.getBounds();
-   // int outPosX = outputSldrPos.getCentreX();
-   // int outPosY = outputSldrPos.getCentreY();
-   // outputGainText.setBounds((outPosX - 40), (outPosY + 50), 80, 15);
-   //
-    //auto distortionTypeMenuPos = guiPosition.getCentre();    
-
- ////   cutoffSldr.setBounds(rightComponentArea.removeFromLeft(150));
-   // cutoffSldr.setSize(100, 100);
-   // Rectangle <int> cutoffSldrPos = cutoffSldr.getBounds();
-   // int cutPosX = cutoffSldrPos.getCentreX();
-   // int cutPosY = cutoffSldrPos.getCentreY();
-   // cutoffText.setBounds((cutPosX - 40), (cutPosY + 50), 80, 15);
-
-     
-    // filterTypeMenu.setSize(100, 40);
-
-    //dryWetSldr.setBounds(rightComponentArea.removeFromBottom(150));
-    //dryWetSldr.setBounds(rightComponentArea.removeFromLeft(150));
-   
-    //Rectangle <int> dryWetSldrPos = dryWetSldr.getBounds();
-    //int dryPosX = dryWetSldrPos.getCentreX();
-    //int dryPosY = dryWetSldrPos.getCentreY();
-    //dryWetText.setBounds((dryPosX - 30), (dryPosY + 50), 60, 15);
+  
+    //Meters area, most left for input and most right for output
     inputMeterL.setBounds(guiPosition.getInputMeterArea(0));
     inputMeterR.setBounds(guiPosition.getInputMeterArea(1));
     outputMeterL.setBounds(guiPosition.getOutputMeterArea(0));
     outputMeterR.setBounds(guiPosition.getOutputMeterArea(1));
-    
 }
 
 void TypesofDistortionAudioProcessorEditor::sliderValueChanged(Slider* slider)
@@ -279,45 +239,45 @@ void TypesofDistortionAudioProcessorEditor::comboBoxChanged(ComboBox* comboBoxTh
         {
             audioProcessor.setDistortionType(audioProcessor.Off);
             softClipGUI.softCurveSldr.setVisible(false);
-            softClipGUI.softCurveText.setVisible(false);
+            curveSoftClipText.setVisible(false);
             asymmetricalGUI.asymVariableSldr.setVisible(false);
-            asymmetricalGUI.asymVariableText.setVisible(false);
+            curveAsymmetricText.setVisible(false);
         }
 
         else if (distortionTypeMenu.getSelectedId() == 2) //HardClipping
         {
             audioProcessor.setDistortionType(audioProcessor.HardClipType);
             softClipGUI.softCurveSldr.setVisible(false);
-            softClipGUI.softCurveText.setVisible(false);
+            curveSoftClipText.setVisible(false);
             asymmetricalGUI.asymVariableSldr.setVisible(false);
-            asymmetricalGUI.asymVariableText.setVisible(false);
+            curveAsymmetricText.setVisible(false);
         }
 
         else if (distortionTypeMenu.getSelectedId() == 3) //SoftClipping
         {
             audioProcessor.setDistortionType(audioProcessor.SoftClipType); 
             softClipGUI.softCurveSldr.setVisible(true);
-            softClipGUI.softCurveText.setVisible(true);
+            curveSoftClipText.setVisible(true);
             asymmetricalGUI.asymVariableSldr.setVisible(false);
-            asymmetricalGUI.asymVariableText.setVisible(false);
+            curveAsymmetricText.setVisible(false);
         }
 
         else if (distortionTypeMenu.getSelectedId() == 4) //QuarterCicle
         {
             audioProcessor.setDistortionType(audioProcessor.QuarterCicleType);
             softClipGUI.softCurveSldr.setVisible(false);
-            softClipGUI.softCurveText.setVisible(false);
+            curveSoftClipText.setVisible(false);
             asymmetricalGUI.asymVariableSldr.setVisible(false);
-            asymmetricalGUI.asymVariableText.setVisible(false);
+            curveAsymmetricText.setVisible(false);
         }
        
         else if (distortionTypeMenu.getSelectedId() == 5) //Asymmetrical
         {
             audioProcessor.setDistortionType(audioProcessor.AsymmetricType);
             asymmetricalGUI.asymVariableSldr.setVisible(true);
-            asymmetricalGUI.asymVariableText.setVisible(true);
             softClipGUI.softCurveSldr.setVisible(false);
-            softClipGUI.softCurveText.setVisible(false);
+            curveSoftClipText.setVisible(false);
+            curveAsymmetricText.setVisible(true);
         }
     }
     if (comboBoxThatHasChanged == &filterTypeMenu)

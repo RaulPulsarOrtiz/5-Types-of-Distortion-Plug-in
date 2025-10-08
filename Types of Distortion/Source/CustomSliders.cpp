@@ -18,19 +18,11 @@ FilmStripSlider::FilmStripSlider(juce::Image* _knobStrip, int _frameCount, int _
 }
 
 void FilmStripSlider::drawFrame(juce::Graphics& g, int x, int y, int width, int height, juce::Slider& slider) {
-    //  DBG("slider min: " << slider.getMinimum() << " slider max: " << slider.getMaximun());
-      //float div = (float)((slider.getMaximun() - slider.getMinimun()) / frameCount);
-
-     // DBG("slider val: " << slider.getValue());
-      //double pos + (int)((slider.getValue() + slider.getMinimum()) / div;
-
+   
     const double fractRotation = (slider.getValue() - slider.getMinimum()) / (slider.getMaximum() - slider.getMinimum()); //value between 0 and 1 for current amount of rotation
     int pos = (int)ceil(fractRotation * ((double)frameCount - 1.0)); // current index from 0 ---> nFrames-1
 
     slider.getRange();
-
-    //if (pos > 0)
-    // pos = pos - 1;
 
     if (width != height) /* scale */
     {

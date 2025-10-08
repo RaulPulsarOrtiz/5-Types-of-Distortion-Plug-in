@@ -13,13 +13,14 @@
 #include <cmath>
 #include <atomic>
 
+/* This class has the process for the SofClip distortion */
 class SoftClipProcessor
 {
 public:
     SoftClipProcessor() {};
     ~SoftClipProcessor() {};
 
-    /** Declaration of the process for an HardClipping Distortion.*/
+    /** Declaration of the process for an SoftClipping Distortion.*/
     float softClipping(float input, int a); 
 
     /**Sets the value to the softCurve variable. This value comes from Editor Slider */

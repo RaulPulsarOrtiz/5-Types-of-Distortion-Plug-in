@@ -20,18 +20,14 @@ class AsymmetricalGUI : public Component,
 public:
     AsymmetricalGUI();
     ~AsymmetricalGUI();
-
     void sliderValueChanged(Slider* slider) override;
     void resized() override;
-   
     Slider asymVariableSldr;
-    Label asymVariableText;
-
     void setAsymmetrical(AsymmetricalProcessor*);
+
 private:
     /** Reference to the AsymmetricalProcessor class through a pointer to access and control AsymmetricalProcessor class member functions */
     AsymmetricalProcessor* asymmetricProcessPtr { nullptr };
-
     GUIposition guiPosition;
     LookAndFeel22Steps twentyTwoStepsLookAndFeel;
 };

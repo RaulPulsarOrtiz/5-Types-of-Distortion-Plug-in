@@ -14,6 +14,7 @@
 #include "GUIposition.h"
 #include "CustomSliders.h"
 
+/* This class has the components for the SofClip distortion */
 class SoftClipGUI : public Component,
                     public Slider::Listener
 {
@@ -25,7 +26,6 @@ public:
     void resized() override; 
 
     Slider softCurveSldr;
-    Label softCurveText;
 
     void setSoftClip(SoftClipProcessor*);
 private:
