@@ -35,6 +35,23 @@ float AsymmetricalProcessor::asymmetrical(float input, float c)
     return output;
 }
 
+//float AsymmetricalProcessor::asymmetrical(float input, float c)
+//{
+//    float a = 1.0f / (c + 1.0f);
+//    float output = 0.0f;
+//
+//    if (input > 0.0f)
+//    {
+//        output = input;
+//    }
+//    else
+//    {
+//        output = input + (pow(-input, a) / a);
+//    }
+//
+//    return output;
+//}
+
 void AsymmetricalProcessor::setAsymVariable(float newAsymVariableValue)
 {
     asymVariableValue = newAsymVariableValue;

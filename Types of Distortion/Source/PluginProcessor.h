@@ -129,12 +129,12 @@ private:
      * and @ref PluginEditor::outputMeterR*/
     float inputSignalL{ -60.f }, inputSignalR{ -60.f }, outputSignalL{ -60.f }, outputSignalR{ -60.f };
 
-    juce::SmoothedValue<float> autoGainL{ 1.0f };
-    juce::SmoothedValue<float> autoGainR{ 1.0f };
-    float correctionL{ 1.0f }; //They need to be global here because the value result of that formula need to be remembered from the previous block to the next block. If they would be local they are deleted when the new block starts
-    float correctionR{ 1.0f };
-    float prevDistortedRMSOutputL{ 1.0f };
-    float prevDistortedRMSOutputR{ 1.0f };
+   // juce::SmoothedValue<float> autoGainL{ 1.0f };
+   // juce::SmoothedValue<float> autoGainR{ 1.0f };
+   // float correctionL{ 1.0f }; //They need to be global here because the value result of that formula need to be remembered from the previous block to the next block. If they would be local they are deleted when the new block starts
+   // float correctionR{ 1.0f };
+   // float prevDistortedRMSOutputL{ 1.0f };
+   // float prevDistortedRMSOutputR{ 1.0f };
 
     /**Objects of the classes for each distortion type process: */
     HardClipProcessor hardClipProcessor;

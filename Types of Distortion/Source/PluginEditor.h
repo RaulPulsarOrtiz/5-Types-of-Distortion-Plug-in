@@ -40,10 +40,20 @@ public:
     void mouseDoubleClick(const MouseEvent& event) override;
    
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
+    /*This reference is provided as a quick way for your editor to
+    *access the processor object that created it.
+    */
     TypesofDistortionAudioProcessor& audioProcessor;
-    
+    /** ComboBox to choose the Distortion Type and to choose the Filter Type with a Listener to these ComboBoxes
+    * This ComboBox:
+    * - 0: Hard Clip
+    * - 1: Soft Clip
+    * - 2: Asymmetrical
+    * - 3: Quarter Circle
+    * Filter Type:
+    * Low Pass Filter
+    * High Pass Filter
+    */
     ComboBox distortionTypeMenu, filterTypeMenu;
 
     /**Objects of the classes for each distortion type GUI: */

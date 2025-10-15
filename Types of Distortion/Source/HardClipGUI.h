@@ -32,7 +32,8 @@ private:
     HardClipProcessor* hardClipProcessPtr { nullptr };
     Slider clippingGainSldr;
 
-    /*Object from a class which aim is place the different areas of the GUI to avoid repeat code*/
+    /*Object from the class @ref GUIposition which aim is place the different areas of the GUI to avoid repeat code*/
     GUIposition guiPosition;
+    /*Object from the class @ref LookAndFeelDistortion with custom sliders*/
     LookAndFeelDistortion lookAndFeelDistortion;
 };

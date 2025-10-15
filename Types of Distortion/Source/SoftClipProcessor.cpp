@@ -37,7 +37,7 @@
 //Slope at 0 is exactly 1.0, no matter the drive value(this is why it’s popular).
 //Drive only controls how fast it bends into saturation.
 
-float SoftClipProcessor::softClipping(float input, int a)
+float SoftClipProcessor::softClipping(float input, float a)
 {
     // Safety guard
     if (a <= 0.0f)

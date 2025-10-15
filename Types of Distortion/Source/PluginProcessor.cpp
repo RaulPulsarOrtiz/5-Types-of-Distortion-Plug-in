@@ -104,8 +104,8 @@ void TypesofDistortionAudioProcessor::prepareToPlay (double sampleRate, int samp
     filterL.prepare(spec); 
     filterR.prepare(spec);
 
-    autoGainL.reset(sampleRate, 0.02); // 20 ms smoothing
-    autoGainR.reset(sampleRate, 0.02);
+   // autoGainL.reset(sampleRate, 0.02); // 20 ms smoothing
+   // autoGainR.reset(sampleRate, 0.02);
 
     reset();
 }
@@ -114,8 +114,8 @@ void TypesofDistortionAudioProcessor::reset()
 {
     filterL.reset();
     filterR.reset();
-    autoGainL.setCurrentAndTargetValue(1.0f);
-    autoGainR.setCurrentAndTargetValue(1.0f);
+   // autoGainL.setCurrentAndTargetValue(1.0f);
+   // autoGainR.setCurrentAndTargetValue(1.0f);
 }
 
 void TypesofDistortionAudioProcessor::releaseResources()
@@ -260,41 +260,41 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
 
     //Auto-Gain option C:
     // --- Parameters ---
-    constexpr float minRMS = 1.0e-4f;       // floor to avoid dividing by near-zero signals
-    constexpr float maxGainChange = 2.0f;   // maximum allowed gain factor
-
-    // --- Left channel ---
-    if (prevDistortedRMSOutputL > minRMS)
-    {
-        // Compute raw correction factor
-        float rawCorrectionL = inputSignalL / prevDistortedRMSOutputL;
-
-        // Limit abrupt jumps
-        float limitedCorrectionL = juce::jlimit(0.0f, maxGainChange, rawCorrectionL);
-
-        // Apply the smoothed target
-        autoGainL.setTargetValue(limitedCorrectionL);
-    }
-    else
-    {
-        // Signal too quiet — do nothing (gain = 1)
-        autoGainL.setTargetValue(1.0f);
-    }
-
-    // --- Right channel ---
-    if (numChannels > 1)
-    {
-        if (prevDistortedRMSOutputR > minRMS)
-        {
-            float rawCorrectionR = inputSignalR / prevDistortedRMSOutputR;
-            float limitedCorrectionR = juce::jlimit(0.0f, maxGainChange, rawCorrectionR);
-            autoGainR.setTargetValue(limitedCorrectionR);
-        }
-        else
-        {
-            autoGainR.setTargetValue(1.0f);
-        }
-    }
+  ////  constexpr float minRMS = 1.0e-4f;       // floor to avoid dividing by near-zero signals
+  ////  constexpr float maxGainChange = 2.0f;   // maximum allowed gain factor
+  ////
+  ////  // --- Left channel ---
+  ////  if (prevDistortedRMSOutputL > minRMS)
+  ////  {
+  ////      // Compute raw correction factor
+  ////      float rawCorrectionL = inputSignalL / prevDistortedRMSOutputL;
+  ////
+  ////      // Limit abrupt jumps
+  ////      float limitedCorrectionL = juce::jlimit(0.0f, maxGainChange, rawCorrectionL);
+  ////
+  ////      // Apply the smoothed target
+  ////      autoGainL.setTargetValue(limitedCorrectionL);
+  ////  }
+  ////  else
+  ////  {
+  ////      // Signal too quiet — do nothing (gain = 1)
+  ////      autoGainL.setTargetValue(1.0f);
+  ////  }
+    //
+    //// --- Right channel ---
+    //if (numChannels > 1)
+    //{
+    //    if (prevDistortedRMSOutputR > minRMS)
+    //    {
+    //        float rawCorrectionR = inputSignalR / prevDistortedRMSOutputR;
+    //        float limitedCorrectionR = juce::jlimit(0.0f, maxGainChange, rawCorrectionR);
+    //        autoGainR.setTargetValue(limitedCorrectionR);
+    //    }
+    //    else
+    //    {
+    //        autoGainR.setTargetValue(1.0f);
+    //    }
+    //}
 
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
@@ -315,9 +315,13 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
 
             else if (typeOfDistortion == SoftClipType)
             {                                   
-                fDistorted = fDistorted * (hardClipProcessor.getClippingGain() * 0.25f); //* 0.17); //Reduce the range of scale from 1 - 30 to 1 - 5.1
+                    fDistorted = fDistorted * (hardClipProcessor.getClippingGain() * 0.25f); //* 0.17); //Reduce the range of scale from 1 - 30 to 1 - 5.1
                     fDistorted = hardClipProcessor.hardClipping(fDistorted);
-                    fDistorted = softClipProcessor.softClipping(fDistorted, softClipProcessor.getSoftCurve());               
+                    fDistorted = softClipProcessor.softClipping(fDistorted, softClipProcessor.getSoftCurve());   
+                    float softCurveComp = 1.0f / std::sqrt(softClipProcessor.getSoftCurve());
+                    if (!std::isfinite(softCurveComp))
+                        softCurveComp = 1.0f;
+                    fDistorted *= softCurveComp;
             }
 
             else if (typeOfDistortion == QuarterCicleType)
@@ -333,31 +337,39 @@ void TypesofDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
                     fDistorted = fDistorted * hardClipProcessor.getClippingGain() * 0.17f; //Reduce the range of scale from 1 - 30 to 1 - 5.1
                     fDistorted = hardClipProcessor.hardClipping(fDistorted);
                     fDistorted *= 0.3f; //0.3
-                    fDistorted = asymmetricalProcessor.asymmetrical(fDistorted, asymmetricalProcessor.getAsymVariable());              
+                    fDistorted = asymmetricalProcessor.asymmetrical(fDistorted, asymmetricalProcessor.getAsymVariable());  
+                    float assymComp = 1.0f / std::sqrt(asymmetricalProcessor.getAsymVariable());
+                    if (!std::isfinite(assymComp))
+                        assymComp = 1.0f;
+                    fDistorted *= assymComp;
             }
 
             float fFiltered = (channel == 0) ? filterL.processSample(0, fDistorted) : filterR.processSample(1, fDistorted);
             fWet = fFiltered;
-            channelData[sample] = (fFiltered * wetAmount.load()) + (fDry * dryAmount.load()); //NO HAY DRY-WET AHORA MISMO
+            channelData[sample] = (fFiltered * wetAmount.load()) + (fDry * dryAmount.load());               
+            float gainComp = 1.0f / std::sqrt(hardClipProcessor.getClippingGain());
+           // float normDrive = (hardClipProcessor.getClippingGain() - 1.0f) / (7.94f - 1.0f); // gives 0 at min, 1 at max
+           // float gainComp = 1.0f / (1.0f + (normDrive * 3.0f));
+            channelData[sample] *= gainComp;
         }
     } 
     
     //Now that both channel have been distorted. I can calculate the distorted rms and then the correction multiplier.
     // --- Store distorted RMS for next block's correction ---  
-    prevDistortedRMSOutputL = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
-    if (numChannels > 1)
-        prevDistortedRMSOutputR = buffer.getRMSLevel(1, 0, buffer.getNumSamples());
-    
-                    
-    autoGainL.setTargetValue(correctionL);
-    if (numChannels > 1)
-        autoGainR.setTargetValue(correctionR);
-   
-    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) 
-    { 
-        buffer.getWritePointer(0)[sample] *= autoGainL.getNextValue(); 
-    if (numChannels > 1) 
-        buffer.getWritePointer(1)[sample] *= autoGainR.getNextValue(); }
+  //  prevDistortedRMSOutputL = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
+  //  if (numChannels > 1)
+  //      prevDistortedRMSOutputR = buffer.getRMSLevel(1, 0, buffer.getNumSamples());
+  //  
+  //                  
+  //  autoGainL.setTargetValue(correctionL);
+  //  if (numChannels > 1)
+  //      autoGainR.setTargetValue(correctionR);
+  // 
+  //  for (int sample = 0; sample < buffer.getNumSamples(); ++sample) 
+  //  { 
+  //      buffer.getWritePointer(0)[sample] *= autoGainL.getNextValue(); 
+  //  if (numChannels > 1) 
+  //      buffer.getWritePointer(1)[sample] *= autoGainR.getNextValue(); }
 
     buffer.applyGain(outputGain.load()); // This is faster and cleaner than "channelData[sample] *= outputGain.load();" which would run a multiplication unce per sample       
             

@@ -13,9 +13,9 @@
 class GUIposition : public Component
 {
 public:
-    /** Rectangles to divide the whole Plug-in area in smaller areas to place the different components*/
-   
-    /*@return the whole area minus some borders at the edges*/
+    /** Rectangles to divide the whole Plug-in area in smaller areas to place the different components
+    *@return the whole area minus some borders at the edges
+    */
     void paint(juce::Graphics& g) override;
     juce::Rectangle<int> getInnerArea();
     juce::Rectangle<int> getInputMeterArea(int channel);
@@ -24,5 +24,4 @@ public:
     juce::Rectangle<int> getRightComponentArea();
     juce::Point<int> getCentre();
 private:
-  //  juce::Rectangle<int> halfLeftArea, leftQuarterArea, rightQuarterArea;
 };

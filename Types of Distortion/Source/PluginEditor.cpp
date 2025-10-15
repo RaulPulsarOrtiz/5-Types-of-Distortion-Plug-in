@@ -55,7 +55,7 @@ TypesofDistortionAudioProcessorEditor::TypesofDistortionAudioProcessorEditor(Typ
     addAndMakeVisible(asymmetricalGUI);
 
     outputGainSldr.setSliderStyle(Slider::Rotary);
-    outputGainSldr.setRange(0.f, 1.1f, 0.05);
+    outputGainSldr.setRange(0.f, 1.2f, 0.05);
     outputGainSldr.setValue(1.f);
     outputGainSldr.setTextBoxStyle(Slider::TextBoxAbove, true, 60, 15);
     //outputGainSldr.mouseDoubleClick(MouseEvent mouse);
